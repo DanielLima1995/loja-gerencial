@@ -10,11 +10,14 @@ Este projeto é uma plataforma de e-commerce totalmente gerenciável, desenvolvi
 
 ## 📥 Instalação
 ```sh
-git clone <repositorio>
-cd joja-gerencial
+git clone https://github.com/DanielLima1995/loja-gerencial.git
+
+cd loja-gerencial/front
 npm install  
 ng serve  
 
+cd loja-gerencial/front
+composer install
 php artisan serve
 ```
 
