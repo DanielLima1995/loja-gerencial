@@ -1,0 +1,14 @@
+<div class="bg-default dv-footer">
+  <div class="footer text-white p-4 d-flex justify-content-around" *ngIf="menu">
+    <div class="" *ngFor="let m of menu">
+      <div>{{m?.titulo}}</div>
+      <div>
+        <ul class="list-style-none p-2">
+          <li class="" *ngFor="let subItem of m.subItem">
+            <a class="text-decoration-none text-grey  " [routerLink]="'/'">{{subItem.titulo}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

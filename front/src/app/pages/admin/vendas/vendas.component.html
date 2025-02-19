@@ -1,0 +1,102 @@
+<ng-container *ngIf="carregando">
+  <app-carregamento></app-carregamento>
+</ng-container>
+<div class="bg-default" [ngClass]="{
+  'd-none': carregando
+}">
+  <div class="card p-4">
+    <div class="card-title">
+      <h4>{{isCliente ? 'Meus Pedidos' : 'Vendas Realizadas'}}</h4>
+    </div>
+    <div class="card-body">
+      <div class="conteudo bg-white">
+          <div class="row">
+            <ng-container  *ngFor="let venda of vendas">
+            <div class="col-12 col-lg-6 d-grid mb-4">
+              <div class="card right-shadow ">
+                  <div class="card-body">
+                      <div class="">
+                        <div class="row">
+                          <div class="col-12 d-flex">
+                            <div class="coluna-imagem">
+                              <img src="{{ venda.vendaProdutos[0].produto.imagemPrincipal?.imagem }}" class="d-block" alt="..."/>
+                          </div>
+                          <div class="coluna-conteudo pl-4 w-100">
+                              <div>
+                                <div class="d-flex justify-content-between bold ">
+                                  <div class="bold">#{{venda.id}} </div>
+                                  <div>{{venda.data_compra | date: 'dd/MM HH:mm'}}</div>
+                                </div>
+                                <hr />
+                                <div>
+                                  <div class="">
+                                    <label for="status" class="bold">Status</label>
+                                    <select class="form-control status"  *ngIf="!isCliente" (change)="alteraStatus(venda.id, $event)">
+                                      <option value="{{status}}" *ngFor="let status of statusEnvio" [selected]="status == venda.status">
+                                        {{status}}
+                                      </option>
+                                    </select>
+                                  </div>
+                                  <div class="status"  *ngIf="isCliente">
+                                    {{venda.status}}
+                                  </div>
+                                </div>
+                                  
+                              </div>
+                          </div>
+                          </div>
+                          <div class="col-12 mt-4">
+                            <div class="row">
+                              <div class="col-12 col-lg-4 ">
+                                <label for="cliente" class="bold">Cliente</label>
+                                <div>
+                                  {{venda.cliente.nome}}
+                                </div>
+                              </div>
+                              <div class="col-6 col-lg-4 mt-2">
+                                <label for="valor" class="bold">Quantidade</label>
+                                <div>
+                                  {{venda.quantidadeTotal}}
+                                </div>
+                              </div>
+                              <div class="col-6 col-lg-4">
+                                <label for="valor" class="bold"> </label>
+                                <div>
+                                  <h6>{{globalFunctions.valorConvertido(venda.valor)}}</h6>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="card-footer d-flex  justify-content-end">
+                    <button class="btn btn-primary radius-0 bg-flower-blue"  [routerLink]="baseRouter + venda.id">Detalhes</button>
+                  </div>
+              </div>
+          
+            </div>
+        </ng-container>
+
+
+          </div>
+          <div class="mt-4">
+            <app-pagination  *ngIf="vendas.length > 0"
+              [currentPage]="currentPage"
+              [totalPages]="totalPages"
+              (pageChanged)="onPageChanged($event)">
+            </app-pagination>
+          </div>
+
+          <div class="col-12 bg-white w-100 white radius-0 right-shadow p-0" *ngIf="vendas.length == 0">
+            <div class="text-center fw-bolder p-4 bg-white">
+              {{ isCliente ? 'Nenhum Pedido Realizado' : 'Nenhuma Venda Realizada!' }}
+            </div>
+          </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  
+</div>

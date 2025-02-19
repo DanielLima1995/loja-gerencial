@@ -1,0 +1,57 @@
+<ng-container *ngIf="carregando">
+  <app-carregamento></app-carregamento>
+</ng-container>
+<ng-container *ngIf="!carregando">
+  <app-top-bar></app-top-bar>
+
+  <div class="bg-default pt-4  main-content">
+    <div class="bg-white p-0" [ngClass]="{
+        'container' : !GlobalFunctions.isIndex
+    }">
+
+          <main class="d-flex flex-nowrap" *ngIf="isClienteArea || isAdminArea">
+            <h1 class="visually-hidden">Sidebars</h1>
+          
+            <div class="d-flex flex-column flex-shrink-0 bg-body-tertiary menu-interno" [ngClass]="{
+              'd-none': !GlobalFunctions.showMenuInterno
+            }" style="width: 4.5rem;">
+                <div class="dv-menu">
+                  <div class="dropdown border-top">
+                    <a href="#" class="d-flex align-items-center justify-content-center p-3 link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-user-circle icone-usuario-menu text-flower-blue" aria-hidden="true" alt="mdo"></i>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow menusContent-lateral" *ngIf="menusContent.length > 0">
+                      <li  *ngFor="let menu of menusContent"><a class="dropdown-item" [routerLink]="menu.link">{{menu.title}}</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+                    </ul>
+                  </div>
+                <ul class="nav nav-pills nav-flush flex-column mb-0 text-center" *ngIf="menusContent.length > 0">
+                <li class="nav-item " *ngFor="let menu of menusContent; let count = count;">
+                  <a [routerLink]="menu.link" [ngClass]="{
+                    'active': itemAtivo == menu.ref
+                  }" href="#" class="nav-link  py-3 border-bottom rounded-0 text-flower-blue" aria-current="page" title="{{menu.title}}" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <i class="{{menu.icon}}" aria-hidden="true"></i>
+                  </a>
+                </li>
+                <li class="nav-item" *ngIf="GlobalFunctions.isMobile">
+                  <a class="nav-link  py-3 border-bottom rounded-0 text-black" (click)="changeStatusMenuInterno()" aria-current="page" title="Esconder Menu" data-bs-toggle="tooltip" data-bs-placement="right">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                  </a>
+                </li>
+              </ul>
+                </div>
+            </div>
+            <div class="w-100">
+                <router-outlet></router-outlet>
+            </div>
+          </main>
+
+        <ng-container  *ngIf="!isClienteArea && !isAdminArea">
+            <router-outlet></router-outlet>
+        </ng-container>
+    </div>
+
+  </div>
+  <app-footer></app-footer>
+</ng-container>

@@ -1,0 +1,86 @@
+<div>
+    <div class="justify-content-center w-100">
+      <div class="">
+        <div class="card">
+          <div class="card-body bg-default d-flex justify-content-around">
+            <form #cadastroForm="ngForm" class="bg-white" (ngSubmit)="onSubmit(cadastroForm)">
+              <!-- Nome -->
+              <div class="form-group">
+                <label  class="fw-bolder" for="nome">Nome</label>
+                <input type="text" required id="nome" class="form-control" name="nome" [(ngModel)]="nome" required />
+              </div>
+  
+              <!-- CPF com máscara -->
+              <div class="form-group">
+                <label  class="fw-bolder" for="cpf">CPF</label>
+                <input type="text" required id="cpf" class="form-control" name="cpf" [(ngModel)]="cpf" mask="000.000.000-00" required />
+              </div>
+  
+              <!-- Email com placeholder -->
+              <div class="form-group">
+                <label  class="fw-bolder" for="email">Email</label>
+                <input type="email" required id="email" class="form-control" name="email" [(ngModel)]="email" placeholder="example@domain.com" required />
+              </div>
+              <!-- Senha com opção de visualizar -->
+              <div class="form-group">
+                <label  class="fw-bolder" for="senha">Senha</label>
+                <div class="input-group">
+                  <input [type]="showPassword ? 'text' : 'password'" required id="senha" class="form-control" name="senha" [(ngModel)]="senha" required />
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary gerenciar-senha" (click)="togglePasswordVisibility()">
+                      <i class="fa fa-eye" *ngIf="!showPassword" aria-hidden="true"></i>
+                      <i class="fa fa-eye-slash" *ngIf="showPassword" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+             <div class="form-group small" *ngIf="senha.length > 0">
+                <label class="fw-bolder">A senha deve possuir: </label>
+                <ul>
+                    <li [ngClass]="{
+                      'text-danger': !senhaTamanho,
+                      'text-success': senhaTamanho
+                    }">
+                    <i *ngIf="!senhaTamanho" class="fa fa-times" aria-hidden="true"></i>
+                    <i class="fa fa-check" *ngIf="senhaTamanho" aria-hidden="true"></i>
+
+                        Possuir mais de 8 caracteres
+                    </li>
+                    <li [ngClass]="{
+                      'text-danger': !senhaPossuiMinusculo,
+                      'text-success': senhaPossuiMinusculo
+                    }">
+                    <i *ngIf="!senhaPossuiMinusculo" class="fa fa-times" aria-hidden="true"></i>
+                    <i class="fa fa-check" *ngIf="senhaPossuiMinusculo" aria-hidden="true"></i>
+
+                        Possuir pelo menos uma letra minuscula
+                    </li>
+                    <li [ngClass]="{
+                      'text-danger': !senhaPossuiMaiusculo,
+                      'text-success': senhaPossuiMaiusculo
+                    }">
+                    <i *ngIf="!senhaPossuiMaiusculo" class="fa fa-times" aria-hidden="true"></i>
+                    <i class="fa fa-check" *ngIf="senhaPossuiMaiusculo" aria-hidden="true"></i>
+
+                        Possuir pelo menos uma letra maiuscula
+                    </li>
+                </ul>
+              </div>
+  
+              <!-- Confirmação da Senha -->
+              <div class="form-group">
+                <label  class="fw-bolder" for="confirmSenha">Confirmar Senha</label>
+                <input type="password" required id="confirmSenha" class="form-control" name="confirmSenha" [(ngModel)]="confirmSenha" required />
+                <div>
+                  <small class="text-danger" *ngIf="confirmSenha && senha && confirmSenha != senha">As senhas não coinciden</small>
+                </div>
+              </div>
+  
+              <button type="submit" class="btn btn-success btn-block w-100 mt-4 radius-0" [disabled]="cadastroForm.invalid || !senhaValida">Cadastrar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

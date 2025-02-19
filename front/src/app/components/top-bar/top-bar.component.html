@@ -1,0 +1,146 @@
+<nav class="navbar background-primario">
+    <div class="container d-flex">
+        
+      <div class="w-150px">
+        <button 
+          *ngIf="GlobalFunctions.isMobile && !GlobalFunctions.showMenuInterno && !GlobalFunctions.isIndex"
+          (click)="changeStatusMenuInterno()"
+          class="btn btn-default" 
+          type="button" 
+          >
+          <i class="fa fa-list" aria-hidden="true"></i>
+        </button>
+      </div>
+        <a class="btn navbar-brand btn-link" routerLink="/">Navbar</a>
+        <form class=" d-none d-sm-flex w-50" role="search">
+            <input type="text" class="form-control input-search radius-0" [(ngModel)]="busca"  [ngModelOptions]="{standalone: true}" aria-describedby="basic-addon1">
+            <button class="btn btn-outline-primary bg-flower-blue text-white   btn-search"   [routerLink]="'/produtos'" 
+            [queryParams]="{ busca: busca }"><i class="fa fa-search" aria-hidden="true"></i></button>
+        </form>
+        <div>
+          <div  *ngIf="isLogado" class="dropdown ml-2 btn btn-link" (mouseover)="showDropdown()" (mouseleave)="hideDropdown()">
+            <button 
+              *ngIf="authService.tipoUsuario != 'Admin'"
+              class="btn btn-default dropdown-toggle " 
+              type="button" 
+              id="dropdownMenuButton" 
+              [attr.aria-expanded]="isDropdownOpen ? 'true' : 'false'"
+              [routerLink]="'/carrinho'"
+              >
+              <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+            </button>
+            <ul 
+              class="dropdown-menu radius-0 p-0 m-0 right-shadow" 
+              [class.show]="isDropdownOpen" 
+              aria-labelledby="dropdownMenuButton">
+              <ng-container *ngIf="carrinhoTratados.length > 0">
+
+                <li  *ngFor="let carrinhoProduto of carrinhoTratados; let index = index;">
+                  <div class="dropdown-item p-0">
+                    <div class="row">
+                      <div class="col-12">
+                          <div class="card">
+                              <div class="card-body d-flex">
+                                  <div class="coluna-imagem">
+                                      <img src="{{ carrinhoProduto.imagemPrincipal?.imagem }}" class="d-block" alt="..."/>
+                                  </div>
+                                  <div class="coluna-conteudo pl-4 w-100">
+                                      <div>
+                                        <div class="bold">
+                                          {{carrinhoProduto.titulo}}</div>
+                                          <div>
+                                              <div class="row small">
+                                                    <div class="col-12">
+                                                      <div class="">
+                                                          <label for="quantidade">Cor: </label> {{carrinhoProduto.tag_descricao}}
+                                                      </div>
+                                                  </div>
+                                                  <div class="col-12">
+                                                    <div class="">
+                                                        <label for="quantidade">Tamanho: </label> {{carrinhoProduto.tamanho_descricao}}
+                                                    </div>
+                                                </div>
+                                                  <div class="col-12">
+                                                      <div class="">
+                                                          <label for="quantidade">Quantidade: </label> {{carrinhoProduto.quantidade}}
+                                                      </div>
+                                                  </div>
+                                                  <div class="col-12">
+                                                    <div class="text-right bold">
+                                                      R$ {{carrinhoProduto.valor}}
+                                                    </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <hr class="mt-1 ml-1" *ngIf="(index + 1) < carrinhoTratados.length" />
+                          <div *ngIf="(index + 1) == carrinhoTratados.length" class="border-top p-2  background-primario">
+                            <div class=" d-flex flex-column p-2">
+                              <div class="d-flex justify-content-between">
+                                <div>Quantidade de Produtos</div>
+                                <div class="text-right bold">{{quantidadeProdutos}}</div>
+                              </div>
+                              <div class="d-flex justify-content-between">
+                                <div>Valor Total </div>
+                                <div class="text-right bold">{{valorTotal}}</div>
+                              </div>
+                            </div>
+                            <div>
+                              <a class="btn btn-success bg-flower-blue radius-0 btn-raised w-100 mt-4" [routerLink]="'/carrinho'" >Detalhes</a>
+                          </div>
+                          </div>
+                      </div>
+                  </div>
+                  </div>
+                </li>
+              </ng-container>
+              
+            </ul>
+          </div>
+            <ng-container *ngIf="isLogado">
+            <div class="dropdown ml-2 btn btn-link pl-0 pr-0 m-0"  *ngIf="GlobalFunctions.menuExterno" (mouseover)="showUsuarioDropdown()" (mouseleave)="hideUsuarioDropdown()">
+              <button 
+                class="btn btn-default dropdown-toggle text-flower-blue" 
+                type="button" 
+                id="dropdownMenuUsuarioButton" 
+                [attr.aria-expanded]="isDropdownUsuarioOpen ? 'true' : 'false'"
+                [routerLink]="authService.tipoUsuario == 'Admin' ? '/admin/vendas' : '/cliente/pedidos'"
+                >
+                  <ng-container *ngIf="GlobalFunctions.isMobile">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                  </ng-container>
+                  <ng-container *ngIf="!GlobalFunctions.isMobile">
+                    {{ saudacaoPersonalizada() + ', ' + primeiroNome }}
+                  </ng-container>
+              </button>
+              <ul 
+                class="dropdown-menu radius-0 p-0 m-0 dropdownMenuUsuarioButton text-small shadow menusContent-lateral" 
+                [class.show]="isDropdownUsuarioOpen" 
+                aria-labelledby="dropdownMenuUsuarioButton">
+                  <li  *ngFor="let menu of GlobalFunctions.menuExterno"><a class="dropdown-item" [routerLink]="menu.link"> {{menu?.title}}</a></li>              
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" (click)="gerenciaLogin()">Logout</a></li>
+              
+                </ul>
+            </div>
+            </ng-container>
+            <ng-container *ngIf="!isLogado">
+              <a class="ml-2 btn btn-link btn-default btnGerenciaLogin text-flower-blue" (click)="gerenciaLogin()"><span><i class="fa fa-sign-in" aria-hidden="true"></i> Entrar</span></a>
+            </ng-container>
+
+            <!--
+                  <button class="ml-2 btn btn-outline-success" type="submit">Search</button>
+            <button class="ml-2 btn btn-outline-success" type="submit">Search</button>
+       
+            -->
+       </div>
+       <form class=" d-flex d-sm-none w-100" role="search">
+          <input type="text" class="form-control input-search radius-0" [(ngModel)]="busca"  [ngModelOptions]="{standalone: true}" aria-describedby="basic-addon1">
+          <button class="btn btn-outline-primary bg-flower-blue text-white   btn-search"   [routerLink]="'/produtos'" 
+          [queryParams]="{ busca: busca }"><i class="fa fa-search" aria-hidden="true"></i></button>
+      </form>
+    </div>
+</nav>

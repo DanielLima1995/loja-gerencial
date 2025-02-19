@@ -1,0 +1,15 @@
+<div class="home-header">
+    
+</div>
+
+<div class="container bg-white mt-4">
+    <app-produtos-relacionados [showDescricao]="false" [qtdTotalMobile]="2" [titulo]="'Ofertas do Dia'" [qtdRow]="4" [qtdTotal]="4" [showDescricao]="!GlobalFunctions.isMobile" [qtdRowMobile]="2" ></app-produtos-relacionados>
+</div>
+
+<div *ngIf="GlobalFunctions.isMobile" class="container imagem-fixa mt-4 mb-4 dv-imagem-lateral">
+    <img  src="assets/images/imagem-divisao.png" class="d-block w-100 imagem-lateral" alt="...">
+</div>
+
+<div class="container bg-white mt-4 mb-4">
+    <app-produtos-relacionados [showDescricao]="false" [qtdTotalMobile]="2" [titulo]="'Ofertas do Dia'" [qtdRow]="4" [qtdTotal]="4" [showDescricao]="!GlobalFunctions.isMobile" [qtdRowMobile]="2" ></app-produtos-relacionados>
+</div>
