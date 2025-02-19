@@ -6,7 +6,6 @@ Este projeto é uma plataforma de e-commerce totalmente gerenciável, desenvolvi
 ## 🚀 Tecnologias Utilizadas
 - **Angular** 19.0
 - **Laravel** 10.48
-- **Bootstrap** 5.3
 
 ## 📥 Instalação
 ```sh
