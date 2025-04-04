@@ -1,0 +1,152 @@
+<ng-container *ngIf="carregando">
+  <app-carregamento></app-carregamento>
+</ng-container>
+<div class="bg-default" [ngClass]="{
+  'd-none': carregando
+}">
+    <div class="card p-4">
+      <div class="card-title">
+        <h4>Editar Produto</h4>
+      </div>
+      <div class="card-body">
+        <div class="conteudo bg-white">
+            <form [formGroup]="formulario" >
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                      <div class="form-group">
+                      <label  class="fw-bolder" for="titulo">Titulo</label>
+                      <input type="text"  formControlName="titulo" required id="titulo" class="form-control" name="titulo"required />
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="fw-bolder" for="valor">Valor</label>
+                            <input
+                              type="text"
+                              required
+                              id="valor"
+                              formControlName="valor"
+                              class="form-control"
+                              name="valor"
+                              appMaskMoney
+                            />
+                          </div>
+                      </div>
+                      <div class="col-12">
+                        <div class="form-check form-switch  form-group">
+                            <input class="form-check-input"  formControlName="produto_ativo" type="checkbox" role="switch" id="produto_ativo" checked>
+                            <label class="form-check-label" for="produto_ativo">Produto Ativo</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                        <label  class="fw-bolder" for="titulo">Descrição Básica</label>
+                        <textarea required  formControlName="descricao_basica" id="descricao_basica" maxlength="150" rows="2" class="form-control" name="descricao_basica" required></textarea>
+                        <small>Quantidade Máximo de 150 caracteres</small>
+                        </div>
+                      </div>
+                    <div class="col-12">
+                      <div class="form-group">
+                      <label  class="fw-bolder" for="titulo">Descrição</label>
+                      <div>
+                        <quill-editor formControlName="descricao"></quill-editor>
+                      </div>
+                      </div>
+                    </div>
+                    <div class="col-12 mt-4" *ngIf="tags">
+                        <ng-container>
+                            <h4>Tags do Produto</h4>
+                            <small>Selecione as tags vinculadas ao produto. Isso vincula um produto a uma categoria/subcategoria</small>
+                            <div class=" border mt-4 ">
+                                <div class="card  border-bottom" [ngClass]="{
+                                    ' mb-2' : (c + 1) < tags.chaves.length
+                                }
+                                " *ngFor="let item of tags.chaves; let c = count;">
+                                    <div class="card-header bg-white radius-0 p-0" id="headingOne">
+                                      <div class="mb-0 d-flex justify-content-between">
+                                        <button class="btn btn-link btn-block text-left vertical-sub" (click)="gerenciaCollapse(item)" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                          {{ item }}
+                                        </button>
+                                        <div class="mr-4" *ngIf="tagsObrigatorias.indexOf(item) > -1">
+                                            <small class="text-danger vertical-sub" *ngIf="!tagsSelecionadas[item] || tagsSelecionadas[item].length == 0">É obrigatório selecionar pelo menos uma tag</small>
+                                        </div>
+                                      </div>
+                                    </div>
+                                
+                                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" [ngClass]="{
+                                      'show': (collapses[item] === true || (tagsProduto[item] && tagsProduto[item].length > 0))
+                                    }" data-parent="#accordionExample">
+                                        <div class="row p-4 pb-2 pt-2">
+                                                <div class="form-check form-switch col-6 col-lg-3" *ngFor="let subItem of tags.dados[item]">
+                                                    <input class="form-check-input" type="checkbox" role="switch"  (change)="gerTagsSelecionadas($event.target, item, subItem.id)" id="flexSwitchCheckChecked" [checked]="isChecked(item, subItem.id)">
+                                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{subItem.tipo}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                      </div>
+                            </div>
+                            
+                        </ng-container>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button 
+                          type="button" 
+                          class="btn bg-caddet btn-primary radius-0 btn-lg" 
+                          (click)="triggerFileInput()">
+                          Adicionar Imagens
+                        </button>
+                        <input 
+                          type="file" 
+                          id="imageUpload" 
+                          class="d-none" 
+                          (change)="onFileSelected($event)" 
+                          accept="image/*" 
+                          #imageUploadInput 
+                          multiple>
+                          <div>
+                            <small class="text-danger vertical-sub" *ngIf="previewImages.length == 0">É obrigatório adicionar pelo menos uma imagem</small>
+                          </div>
+                    </div>
+                    <div class="col-12 mt-4" *ngIf="previewImages.length > 0">
+                        <label  class="fw-bolder" for="titulo">Imagens Adicionadas</label>
+                        <div class="row">
+                            <div 
+                              *ngFor="let image of previewImages; let i = index" 
+                              class="col-md-3 mb-3 position-relative">
+                              <img [src]="image" alt="Pré-visualização" class="img-thumbnail">
+                              <div class="position-absolute mr-3 mt-1 top-0 end-0">
+                              <button 
+                              *ngIf="i != 0"
+                              type="button" 
+                              class="btn btn-success btn-sm " 
+                              (click)="alterarImagemPrincipal(i)">
+                              P
+                            </button>
+                            <button 
+                              type="button" 
+                              class="btn btn-danger btn-sm ml-2" 
+                              (click)="removeImage(i)">
+                              &times;
+                            </button>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+      </div>
+      <div class="card-footer d-flex bg-white justify-content-end ">
+        <button class="btn btn-primary btn-lg mr-2 radius-0 bg-caddet" [disabled]="!formularioValido" (click)="togglePreview()">Visualizar</button>
+        <button type="submit" class="btn btn-primary btn-lg radius-0 bg-flower-blue" (click)="onSubmit()" [disabled]="!formularioValido" >Salvar</button>
+      </div>
+    </div>
+    
+    
+  </div>
+  <div class="dv-preview  bg-default pb-4" *ngIf="showPreview" >
+    <app-product-preview [dadosCadastrados]="dadosPreview"></app-product-preview>
+  </div>
+  

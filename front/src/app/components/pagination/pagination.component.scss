@@ -1,0 +1,24 @@
+/* pagination.component.css */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  button {
+    padding: 5px 10px;
+    cursor: pointer;
+    color: cornflowerblue;
+  }
+  
+  button:disabled {
+    cursor: not-allowed;
+  }
+  
+  .active button {
+    font-weight: bold;
+    background-color: cornflowerblue;
+    color: white;
+  }
+  

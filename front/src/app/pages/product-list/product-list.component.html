@@ -1,0 +1,103 @@
+
+<div class="container p-0">
+  <div class="card background-primario">
+    <div class="card-body">
+      <div class="mb-4 d-none d-md-flex justify-content-between form-row">
+        <h3>Produtos Encontrados</h3>
+        <select class="custom-select border-none  right-shadow radius-0 mr-2" *ngIf="filterProdutos.length > 0">
+          <option>Mais Recentes</option>
+          <option>Mais Vistos</option>
+        </select>
+      </div>
+        <div class="d-sm-none">
+          <div class="mb-4 d-flex">
+            <div class="w-50 mr-2">
+            <select class="custom-select border-none  right-shadow radius-0 w-100" *ngIf="filterProdutos.length > 0">
+              <option>Mais Recentes</option>
+              <option>Mais Vistos</option>
+            </select>
+            </div>
+            <div class="w-50 ml-2" *ngIf="isMobile">
+            <button class="btn btn-primary btn-lg radius-0 bg-flower-blue w-100" (click)="changeConteudoFiltros()">Filtros</button>
+            </div>
+          </div>
+        </div>
+        <div class="d-md-flex">
+        <div class="w-small-100 w-large-25 mr-4"  [ngClass]="{
+          'bg-white mt-4 mb-4': isMobile,
+          'd-none': isMobile && !showFiltros
+        }" *ngIf="tags">
+          <div class="card  mb-2  right-shadow" *ngFor="let item of tags.chaves; let index = index;">
+            <div>
+              <div class="card-header bg-white radius-0 p-0" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link btn-block text-left  d-flex justify-content-between p-4 w-100" (click)="gerenciaCollapse(item)" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    {{ item }}  <i *ngIf="collapses[item] != true" class="fa fa-arrow-down" aria-hidden="true"></i>
+                    <i *ngIf="collapses[item] === true" class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </button>
+                  
+                </h2>
+              </div>
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" [ngClass]="{
+                'show': collapses[item] === true
+              }" data-parent="#accordionExample">
+                <div class="card-body" *ngFor="let subItem of tags.dados[item]">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      [checked]="filtros[item] === subItem.id"
+                      (change)="collapseFiltros(item, subItem.id)"
+                      type="radio"
+                      [name]="item"
+                      [value]="subItem.id"
+                    >
+                    <label class="form-check-label" for="flexRadioDefault1">
+                      {{ subItem.tipo }}
+                    </label>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="w-small-100 w-large-75 conteudo">
+          
+          <ng-container *ngIf="carregando">
+            <app-carregamento></app-carregamento>
+          </ng-container>
+          <div class="row" *ngIf="!carregando">
+            <div class="col-6 col-xl-4 d-grid" *ngFor="let p of filterProdutos; let c = index">
+                <a class="dv-cards mr-2 mb-4 text-decoration-none d-grid"  [routerLink]="'/produto/detalhes/' + p.id">
+                  <div class="card border-none right-shadow p-1 radius-0">
+                    <img
+                     [src]="p?.imagemPrincipal?.imagem" 
+                     class="card-img-top imagem-produto h-small-auto h-large-250 "
+                     alt="Imagem do Produto"
+                    />
+                    <div class="card-body">
+                      <h6 class="card-title">{{ p.titulo }}</h6>
+                      <p class="card-text text-secodary pl-0 pl-lg-2 pb-2">{{ refatoraDescricao(p.descricao_basica) }}</p>
+                      <h6 class="font-weight-bold valor-card">{{ globalFunctions.valorConvertido(p.valor) }}</h6>
+                    </div>
+                  </div>
+                </a>        
+            </div>
+            <div>
+              <app-pagination  *ngIf="filterProdutos.length > 0"
+                [currentPage]="currentPage"
+                [totalPages]="totalPages"
+                (pageChanged)="onPageChanged($event)">
+              </app-pagination>
+            </div>
+            <div class="col-12 white radius-0 right-shadow p-0" *ngIf="filterProdutos.length == 0">
+              <div class="text-center fw-bolder p-4 bg-white">Nenhum Produtos Encontrado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>

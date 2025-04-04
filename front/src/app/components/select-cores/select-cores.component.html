@@ -1,0 +1,19 @@
+<form [formGroup]="formulario" >
+  <ng-select #selectCores [clearable]="false" [items]="tags" bindLabel="descricao"  bindValue="id" (change)="sendSelectedColor()"  formControlName="corSelecionada" >
+    <!-- Template para exibir o item selecionado -->
+    <ng-template ng-label-tmp let-item="item">
+      <div class="color-option bg-white">
+        <div *ngIf="item?.cor" class="color-box" [style.backgroundColor]="item?.cor"></div>
+        <span>{{ item?.descricao ?? item?.tipo || 'Selecione uma cor' }}</span>
+      </div>
+    </ng-template>
+
+    <!-- Template para exibir as opções na lista -->
+    <ng-template ng-option-tmp let-item="item">
+      <div class="color-option pt-2  bg-white">
+        <div class="color-box" [style.backgroundColor]="item.cor"></div>
+        <span>{{ item.descricao ?? item?.tipo }}</span>
+      </div>
+    </ng-template>
+  </ng-select>
+</form>

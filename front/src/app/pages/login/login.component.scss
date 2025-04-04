@@ -1,0 +1,26 @@
+.container {
+    max-width: 500px;
+  }
+  
+  .card {
+    border-radius: 10px;
+  }
+  
+  .card-body {
+    padding: 30px;
+  }
+  
+  .gerenciar-senha{
+    border-radius: 0px 10px 10px 0px;
+    border: #d2d4d5 solid 1px;
+    color: #d2d4d5;
+  }
+
+  .gerenciar-senha:hover{
+    background: #d2d4d5;
+  }
+
+  form{
+    width: 450px;
+    padding: 50px;
+  }
