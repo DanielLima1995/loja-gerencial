@@ -16,7 +16,6 @@ class TagsController extends Controller
 {
     public function index()
     {
-        die;
         $tags = QueryBuilder::for(Tags::class)->select(['tipo','descricao','cor', 'id'])
         ->allowedFilters([
             AllowedFilter::callback('isCadastro', function ($query, $tags) {

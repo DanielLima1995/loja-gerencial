@@ -1,0 +1,36 @@
+# Laravel & PHP
+/vendor/
+/node_modules/
+/.env
+.phpunit.result.cache
+/storage/*.key
+/public/storage
+Homestead.yaml
+Homestead.json
+/.vagrant/
+
+# Laravel Logs
+/storage/logs/*.log
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+
+# Composer
+composer.phar
+
+# NPM/Yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db
+.history

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Usuarios;
-use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\UsuarioResource;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon; // Para manipulação de datas
+use App\Models\User; // Modelo User (não parece ser usado no código atual)
+use App\Models\Usuarios; // Modelo Usuarios
+use Illuminate\Http\Request; // Para lidar com requisições HTTP
+use Illuminate\Routing\Controller; // Classe base para controladores
+use Tymon\JWTAuth\Facades\JWTAuth; // Para autenticação JWT
+use Illuminate\Support\Facades\Hash; // Para hashing de senhas
+use App\Http\Resources\UsuarioResource; // Resource para formatar a resposta do usuário
+use Illuminate\Support\Facades\Validator; // Para validação de dados
 
 class AuthController extends Controller
 {
@@ -53,6 +54,7 @@ class AuthController extends Controller
             'email' => 'required',
             'senha' => 'required'
         ]);
+        
 
         $credentials = $request->only('email', 'senha');
 
@@ -65,6 +67,7 @@ class AuthController extends Controller
         if (!$token = JWTAuth::fromUser($user)) {
             return response()->json(['error' => 'Could not create token'], 500);
         }
+
 
         $expires_in = JWTAuth::factory()->getTTL() * 60;
         $expiration_time = Carbon::now()->addSeconds($expires_in); 
