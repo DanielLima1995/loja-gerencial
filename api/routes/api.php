@@ -18,7 +18,7 @@ use App\Http\Controllers\ProdutosController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+die;
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/tags', [TagsController::class, 'index']);
 Route::get('/produtos', [ProdutosController::class, 'index']);
