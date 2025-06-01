@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UsuarioCadastrar } from '../../app.interface';
 import { globalModules } from '../../globalModules';
+import { GlobalFunctions } from '../../services/global.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -19,8 +20,9 @@ export class CadastroComponent {
   senha: string = '';
   confirmSenha: string = '';
   showPassword: boolean = false;
+  carregando: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router){
+  constructor(private authService: AuthService, private router: Router, public GlobalFunctions: GlobalFunctions  ){
 
   }
 
@@ -38,17 +40,23 @@ export class CadastroComponent {
         email:  this.email,
         cpf: this.cpf,
         nome: this.nome,
-      }
+      };
+
+      this.carregando = true;
       this.authService.cadastrarUsuario(infoUsuario)
       .subscribe({
         next: (response: any) => {
-          console.log('Cadastro realizado com sucesso!', response);
+          this.carregando = false;
+          this.GlobalFunctions.alerta('Cadastro realizado com sucesso','Usuário cadastrado com sucesso','success');
           setTimeout(() => {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/']);
           }, 2000);
         },
         error: (err: any) => {
+          this.GlobalFunctions.alerta('Erro no Servidor','Ocorreu um erro no servidor ao tentar cadastrar o cliente. Por favor, tente novamente mais tarde.','error');
           console.error('Erro ao cadastrar usuário', err);
+          this.carregando = false;
+
         }
       });
     } else {

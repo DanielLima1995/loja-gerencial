@@ -1,0 +1,27 @@
+  <div class="card card-produto"  [routerLink]="link">
+    <img [src]="imagem" alt="" />
+    <div class="card-body">
+
+      <div class="row">
+        <div class="card-title">
+          <h6>{{ titulo }}</h6>
+        </div>
+        <p>
+          {{ descricao }}
+        </p>
+        <div class="float-right">
+          <app-avaliacao></app-avaliacao>
+        </div>
+      </div>
+      <hr />
+      
+      <div class="">
+        <div><h5 class="bold">{{globalFunctions.valorConvertido(valor)}}</h5></div>
+        <div class="text-flower-blue">
+          em 12x de
+          <span class="bold">{{globalFunctions.valorConvertido(valor / 12)}}</span>
+          sem juros
+        </div>
+      </div>
+    </div>
+  </div>

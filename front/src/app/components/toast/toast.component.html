@@ -1,0 +1,19 @@
+<div
+  class="toast align-items-center border-0 "
+  [ngClass]="[bgClass, toastService.visible && message ? 'toast-show' : 'toast-hide', message? 'show' : '' ]"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+>
+  <div class="d-flex">
+    <div class="toast-body">
+      {{ message }}
+    </div>
+    <button
+      type="button"
+      class="btn-close btn-close-white me-2 m-auto"
+      (click)="toastService.closeToast()"
+      aria-label="Close"
+    ></button>
+  </div>
+</div>

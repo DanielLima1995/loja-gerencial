@@ -6,7 +6,6 @@ import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { Produto, Tag } from '../../app.interface';
-import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
 import { InputNumericoComponent } from '../../components/input-numerico/input-numerico.component';
 import { ProdutosRelacionadosComponent } from '../../components/produtos-relacionados/produtos-relacionados.component';
 import { SelectCoresComponent } from '../../components/select-cores/select-cores.component';
@@ -14,6 +13,8 @@ import { SelectTamanhosComponent } from '../../components/select-tamanhos/select
 import { globalModules } from '../../globalModules';
 import { AuthService } from '../../services/auth.service';
 import { GlobalFunctions } from '../../services/global.service';
+import { CartService } from '../cart/cart.service';
+import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
 
 @Component({
   selector: 'app-product-details',
@@ -24,7 +25,8 @@ import { GlobalFunctions } from '../../services/global.service';
     ProdutosRelacionadosComponent,
     SelectCoresComponent,
     SelectTamanhosComponent,
-    CarregamentoComponent
+    CarregamentoComponent,
+    
   ],
    templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss'
@@ -38,9 +40,11 @@ export class ProductDetailsComponent {
   selectedTamanho: number = 0;
   changeImagemAtiva: number = 0;
   carregando:boolean = true;
+  carregandoVenda:boolean = false;
+
 
   constructor(
-    private produtoService: ProductDetailsService, private route: ActivatedRoute, private auth: AuthService, private router: Router,public globalFunctions: GlobalFunctions
+    private produtoService: ProductDetailsService, private route: ActivatedRoute, private auth: AuthService, private router: Router,public globalFunctions: GlobalFunctions, public cartService: CartService
   ){
     this.idProduto = Number(this.route.snapshot.params['id']);
   }
@@ -145,6 +149,7 @@ export class ProductDetailsComponent {
       
       return;
     }else{
+      this.carregandoVenda = true;
       this.produtoService.gerenciarCarrinho([{
         quantidade: this.currentValue,
         cor: this.selectedColor,
@@ -152,10 +157,19 @@ export class ProductDetailsComponent {
         tamanho: this.selectedTamanho
       }]).subscribe(
         () => {
-          this.modalRedirect();
+          this.carregandoVenda = false;
+          this.cartService.getProdutos().subscribe(
+            (response) => {
+              this.cartService.carrinhoTratados = response?.data?.carrinhoProdutos;
+            },
+            () => {
+              this.globalFunctions.alertaDadosServidor();
+            }
+          );          this.modalRedirect();
           localStorage.removeItem('carrinho');
         },
         () => {
+          this.carregandoVenda = false;
           this.globalFunctions.alerta('Erro ao Adicionar ao Carrinho', 'Ocorreu um erro ao tentar adicionar o produto ao carrinho. Tente novamente.', 'error');
         }
       )

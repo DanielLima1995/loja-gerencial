@@ -14,6 +14,7 @@ export class GlobalFunctions {
   menuExterno: Array<MenuExterno> = [];
   isMobile: boolean = false;
   showMenuInterno = true;
+  environment = environment;
   private apiUrl = `${environment.apiUrl}`; // Substitua pela URL correta da API do seu backend
 
   constructor(private http: HttpClient) { }
@@ -52,7 +53,7 @@ export class GlobalFunctions {
 
   get isIndex(){
     if (typeof window !== "undefined") {
-      return window.location.pathname === "/";
+      return window.location.pathname === this.environment.baselocal || window.location.pathname === this.environment.baseprod;
     }else{
       return false;
    }

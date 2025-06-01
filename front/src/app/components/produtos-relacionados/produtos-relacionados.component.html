@@ -10,17 +10,8 @@
     <div>
         <div class="row" *ngIf="products">
             <ng-container  *ngFor="let p of products; let c = index">
-                <div class="col-{{colsMobile}} col-lg-{{colsScreen}} mt-4"  *ngIf="c < qtdTotal">
-                    <a class="dv-cards text-decoration-none mr-2 mb-4" [routerLink]="'/produto/detalhes/' + p.id">
-                        <div class="card h-100 border-none right-shadow p-2 radius-0">
-                            <img [src]="p?.imagemPrincipal?.imagem" class="card-img-top imagem-produto" alt="Imagem do Produto" />
-                            <div class="card-body">
-                                <h6 class="card-title">{{ p.titulo }}</h6>
-                                <p *ngIf="showDescricao">{{ refatoraDescricao(p.descricao_basica) }}</p>
-                                <h6 class="font-weight-bold  valor-card">{{ GlobalFunctions.valorConvertido(p.valor) }}</h6>
-                            </div>
-                        </div>
-                    </a>
+                <div class="col-12 col-lg-4 mt-4 d-flex  justify-content-center"  *ngIf="c < qtdTotal">
+                    <app-card-produto [imagem]="p.imagemPrincipal.imagem" [link]="'/produto/detalhes/' + p.id" [titulo]="p.titulo" [descricao]="refatoraDescricao(p.descricao_basica)" [valor]="p.valor"></app-card-produto>
                 </div>
             </ng-container>
         </div>

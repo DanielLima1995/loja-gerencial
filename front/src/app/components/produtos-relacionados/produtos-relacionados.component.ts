@@ -4,8 +4,9 @@ import { Component, Input } from '@angular/core';
 import { ProdutosRelacionadosService } from './produtos-relacionados.service';
 import { Produto } from '../../app.interface';
 import { globalModules } from '../../globalModules';
-import { CarregamentoComponent } from '../carregamento/carregamento.component';
 import { GlobalFunctions } from '../../services/global.service';
+import { CarregamentoComponent } from '../carregamento/carregamento.component';
+import { CardProdutoComponent } from '../card-produto/card-produto.component';
 
 @Component({
   selector: 'app-produtos-relacionados',
@@ -13,17 +14,18 @@ import { GlobalFunctions } from '../../services/global.service';
   styleUrls: ['./produtos-relacionados.component.scss'],  // Certifique-se de usar styleUrls (plural)
   imports:[
     ...globalModules,
-    CarregamentoComponent
+    CarregamentoComponent,
+    CardProdutoComponent
     
   ]
 })
 export class ProdutosRelacionadosComponent {
   @Input() idProduto: number = 0;
-  @Input() qtdTotalMobile: number = 4;
+  @Input() qtdTotalMobile: number = 2;
   @Input() qtdRowMobile: number = 1;
   @Input() titulo: string = 'Produtos Relacionados';
-  @Input() qtdRow: number = 4;
-  @Input() qtdTotal: number = 4;
+  @Input() qtdRow: number = 3;
+  @Input() qtdTotal: number = 3;
   @Input() showDescricao: boolean = true;
 
   products: Produto[] = [];

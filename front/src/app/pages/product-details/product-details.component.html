@@ -73,7 +73,7 @@
           </div>
     
           <div  class="col-sm-12" >
-            <a class="btn btn-success w-100 radius-0" (click)="sendCarrinho()">Adicionar ao Carrinho</a>
+            <button class="btn btn-success w-100 radius-0" (click)="sendCarrinho()" [disabled]="carregandoVenda">Adicionar ao Carrinho</button>
           </div>
         </div>
       </div>
@@ -88,6 +88,6 @@
   </div>
 
   <div class="conteudo  bg-white mt-4 p-4">
-    <app-produtos-relacionados [idProduto]="idProduto"></app-produtos-relacionados>
+    <app-produtos-relacionados [idProduto]="idProduto" [showDescricao]="false" [qtdTotalMobile]="1" [titulo]="'Ofertas do Dia'" [qtdRow]="3" [qtdTotal]="3" [qtdRowMobile]="1" ></app-produtos-relacionados>
   </div>
 </div>

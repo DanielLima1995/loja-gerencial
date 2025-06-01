@@ -60,3 +60,54 @@
   .w-150px{
     width: 50px;
   }
+
+  .logo{
+    width: 50px;
+    height: 50px;
+  }
+
+
+.dv-nav-fixa{
+  place-items: center;
+}
+
+ul.nav li.dropdown:hover ul.dropdown-menu{ display: block; }
+ul.nav .nav-item li.dropdown:hover, ul.nav .nav-item li:hover{
+  background-color: #777777;
+  color: white !important;
+}
+
+.nav-fixa ul ul.dropdown-menu{
+  width: 220px;
+}
+
+.nav-fixa ul ul.dropdown-menu li{
+  width: 220px;
+  cursor: pointer;
+}
+
+.offcanvas-body ul{
+      text-align-last: left;
+}
+
+.offcanvas-body ul li a i{
+    padding-right: 10px;
+    
+}
+
+.dv-nav-fixa .offcanvas-body ul li{
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.dv-nav-fixa .offcanvas-body ul li:last-child{
+    border-bottom: none;
+}
+
+.sub-menu-btn i{
+  font-size: 45px;
+}
+
+.offcanvas-header{
+  color: white;;
+}

@@ -19,6 +19,7 @@ export class LoginComponent {
   showPassword: boolean = false;
   errorMessage: string = '';
   isCheckout: boolean = false;
+  carregando: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -45,8 +46,10 @@ export class LoginComponent {
   // Função de envio do formulário
   onLogin(form: any): void {
     if(!form.valid) return;
+    this.carregando = true;
     this.authService.login(this.email, this.senha).subscribe({
       next:(response: any) => {
+        this.carregando = false;
         
         this.authService.usuarioLogado = response.data.usuario;
         this.authService.saveToken(response.data.token, response.data.expires_at);
@@ -63,10 +66,11 @@ export class LoginComponent {
               }
             );
           }
-
+          this.globalFunctions.gerenciaMenuExterno(this.authService.usuarioLogado.tipo_usuario.descricao);
           this.afterLogin();
         }else{
           this.authService.updateUsuarioLogado();
+          this.globalFunctions.gerenciaMenuExterno(this.authService.usuarioLogado.tipo_usuario.descricao);
 
           if(this.isCheckout){
             this.router.navigate(['/checkout']);
@@ -78,6 +82,7 @@ export class LoginComponent {
         
       },
       error: () => {
+        this.carregando = false;
         this.globalFunctions.alerta('Erro de Login', 'O email ou senha inseridos estão incorretos. Verifique suas credenciais e tente novamente.', 'error');
       }
     });

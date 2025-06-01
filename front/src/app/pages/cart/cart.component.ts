@@ -13,6 +13,8 @@ import { globalModules } from '../../globalModules';
 import { Router } from '@angular/router';
 import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
 import { GlobalFunctions } from '../../services/global.service';
+import { ToastComponent } from '../../components/toast/toast.component';
+import { ToastService } from '../../components/toast/toast.service';
 
 
 @Component({
@@ -32,7 +34,6 @@ export class CartComponent {
   @Input() checkout: boolean = false;
   carrinhoProdutos: Carrinho[] = [];
   produtosDados: Array<CarrinhoProdutos> = [];
-  carrinhoTratados: Produto[] = [];
   coresDisponiveis: Array<TagsTratadas>[] = [];
   itemExclusao: ItemExclusaoRef = {
     id: 0,
@@ -45,10 +46,11 @@ export class CartComponent {
 
 
   constructor(
-    private service: CartService,
+    public service: CartService,
     private authService: AuthService,
     private router: Router,
-    public globalFunctions: GlobalFunctions
+    public globalFunctions: GlobalFunctions,
+    public toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -64,8 +66,9 @@ export class CartComponent {
       this.carregando = true;
       this.service.getProdutos().subscribe(
         (response: { data: { carrinhoProdutos: CarrinhoProdutos[] } }) => {
-          this.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
+          this.service.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
           this.gerCoresDisponiveis();
+          this.carregando = false;
         },
         () => {
           this.globalFunctions.alertaDadosServidor();
@@ -78,7 +81,7 @@ export class CartComponent {
 
         this.service.getProdutosDados(ids).subscribe(
           (response: { data: Produto[] }) => {
-            this.carrinhoTratados = this.trataProdutosDados(response.data);
+            this.service.carrinhoTratados = this.trataProdutosDados(response.data);
             this.gerCoresDisponiveis();
             //localStorage.removeItem('carrinho');
           },
@@ -91,7 +94,7 @@ export class CartComponent {
   }
 
   gerCoresDisponiveis() {
-    this.carrinhoTratados.forEach((element: Produto) => {
+     this.service.carrinhoTratados.forEach((element: Produto) => {
       let filtrados = element.tagsProdutos?.filter(
         (item: TagsProdutos) => item.tags.tipo === 'Cores'
       ) || [];
@@ -108,7 +111,7 @@ export class CartComponent {
   }
 
   gerTamanhosDisponiveis() {
-    this.carrinhoTratados.forEach((element: Produto) => {
+     this.service.carrinhoTratados.forEach((element: Produto) => {
       let filtrados = element.tagsProdutos?.filter(
         (item: TagsProdutos) => item.tags.tipo === 'Tamanho'
       ) || [];
@@ -134,6 +137,8 @@ export class CartComponent {
   }
 
   trataProdutosCarrinho(produtos: CarrinhoProdutos[]): Produto[] {
+    if(!produtos || produtos.length === 0) return [];
+
     return produtos.map((item) => {
       item.produto!.cor = item.cor;
       item.produto!.quantidade = item.quantidade;
@@ -163,6 +168,13 @@ export class CartComponent {
       if (result.isConfirmed) {
         if (this.authService.getToken()) {
           this.service.removeItemCarrinho(id).subscribe();
+          this.toast.show('Produto removido com sucesso!', 'success');
+          this.carregando = true;
+          this.service.getProdutos().subscribe(
+            (response: { data: { carrinhoProdutos: CarrinhoProdutos[] } }) => {
+               this.service.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
+            }
+          );
         } else {
           let produtosAtuais: Array<CarrinhoProdutos> = JSON.parse(localStorage.getItem('carrinho') ?? "[]");
 
@@ -196,13 +208,13 @@ export class CartComponent {
       );
     } else {
      // this.carrinhoTratados[indice][ref] = event.id ?? event;
-      localStorage.setItem('carrinho', JSON.stringify(this.carrinhoTratados));
+      localStorage.setItem('carrinho', JSON.stringify( this.service.carrinhoTratados));
     }
   }
 
   get quantidadeProdutos(): number {
     let quantidade: number = 0;
-    this.carrinhoTratados.forEach((item) => {
+     this.service.carrinhoTratados.forEach((item) => {
       quantidade += item.quantidade!;
     });
     return quantidade;
@@ -210,7 +222,7 @@ export class CartComponent {
 
   get valorTotal(): string {
     let valor: number = 0;
-    this.carrinhoTratados.forEach((item) => {
+     this.service.carrinhoTratados.forEach((item) => {
       valor += item.valor ? (parseFloat(item.valor.toString()) * item.quantidade) : 0;
     });
 

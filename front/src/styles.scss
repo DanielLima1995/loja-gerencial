@@ -498,7 +498,7 @@ select{
   border-radius: 5px;
 }
 .bg-default, html{
-  background-color: #EAEDED;
+  background-color: #e6e6e6;
 }
 
 .d-initial{
@@ -535,7 +535,17 @@ p{
 }
 
 .background-primario{
-  background-color: #EAEDED!important;
+  background-color: #e6e6e6 !important;
+}
+
+.background-primario-2{
+  background-color: #414141 !important;
+}
+
+.background-primario-2-hover:hover{
+  background-color: #777777 !important;
+  transition: background-color 0.3s ease;
+  color: white !important;
 }
 
 .bg-white{
@@ -582,6 +592,12 @@ p{
   border-color: #2f6bd7 !important;
 }
 
+.bg-green{
+  background: #3fa996 !important;
+  border-color: white !important;
+  color: white !important;
+}
+
 .bg-initial{
   background: initial !important;
 }
@@ -621,6 +637,16 @@ p{
 .text-flower-blue{
   color: cornflowerblue !important;
 }
+
+.bg-cornflowerblue{
+  background-color: cornflowerblue !important;
+}
+
+.bg-cornflowerblue-light:hover{
+  background-color: #c7d6f1 !important;
+  transition: background-color 0.3s ease;
+}
+
 
 .text-grey{
   color: grey;
@@ -696,4 +722,8 @@ body{
 .img-redux{
   width: 100px !important;
   height: initial !important;
+}
+
+.app-hidden {
+  visibility: hidden;
 }

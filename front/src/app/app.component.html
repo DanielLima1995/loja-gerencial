@@ -1,10 +1,12 @@
+<app-toast></app-toast>
+
 <ng-container *ngIf="carregando">
   <app-carregamento></app-carregamento>
 </ng-container>
 <ng-container *ngIf="!carregando">
   <app-top-bar></app-top-bar>
 
-  <div class="bg-default pt-4  main-content">
+  <div class="bg-default pt-0 pt-sm-4  main-content">
     <div class="bg-white p-0" [ngClass]="{
         'container' : !GlobalFunctions.isIndex
     }">

@@ -6,8 +6,8 @@
     'background-primario': !checkout,
     'd-none': carregando
 }">
-    <ng-container *ngIf="carrinhoTratados.length > 0">
-        <div class="col-12 d-block d-sm-none mb-4" *ngIf="!checkout && carrinhoTratados.length > 0">
+    <ng-container *ngIf="service.carrinhoTratados.length > 0 && !carregando">
+        <div class="col-12 d-block d-sm-none mb-4" *ngIf="!checkout && service.carrinhoTratados.length > 0">
             <div class="card">
                 <div class="card-body">
                     <div>
@@ -38,7 +38,7 @@
                     <div *ngIf="!checkout">
                         <h4>Carrinho de compras</h4>
                     </div>
-                    <ng-container *ngFor="let carrinhoProduto of carrinhoTratados; let index = index;">
+                    <ng-container *ngFor="let carrinhoProduto of  service.carrinhoTratados; let index = index;">
                         <div class="row " [ngClass]="{
                             'mt-4': !checkout
                         }">
@@ -147,14 +147,14 @@
                                         
                                     </div>
                                 </div>
-                                <hr *ngIf="(index + 1) < carrinhoTratados.length" />
+                                <hr *ngIf="(index + 1) < service.carrinhoTratados.length" />
                             </div>
                         </div>
                     </ng-container>  
                 </div>
             </div>
         </div>
-        <div class="col-3 d-none d-sm-block" *ngIf="!checkout && carrinhoTratados.length > 0">
+        <div class="col-3 d-none d-sm-block" *ngIf="!checkout && service.carrinhoTratados.length > 0">
             <div class="card">
                 <div class="card-body">
                     <div>
@@ -177,8 +177,7 @@
             </div>
         </div>
     </ng-container>
-
-    <div class="col-12 white radius-0 right-shadow p-0" *ngIf="carrinhoTratados.length == 0">
+    <div class="col-12 white radius-0 right-shadow p-0" *ngIf="service.carrinhoTratados.length == 0 && !carregando">
         <div class="text-center fw-bolder p-4 bg-white">Seu carrinho está vazio! 🛒 Que tal dar uma olhadinha em nossos produtos e encontrar algo especial para você?</div>
     </div>
 </div>

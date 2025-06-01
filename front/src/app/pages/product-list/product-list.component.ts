@@ -2,17 +2,19 @@ import { Component } from '@angular/core';
 import { ProductListService } from './product-list.service';
 import { ActivatedRoute } from '@angular/router';
 import { Produto, TagsWithKeys } from '../../app.interface';
-import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { globalModules } from '../../globalModules';
 import { GlobalFunctions } from '../../services/global.service';
+import { CardProdutoComponent } from '../../components/card-produto/card-produto.component';
+import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
 
 @Component({
   selector: 'app-product-list',
   imports: [
     ...globalModules,
     PaginationComponent,
-    CarregamentoComponent
+    CarregamentoComponent,
+    CardProdutoComponent
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',

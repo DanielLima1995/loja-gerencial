@@ -17,8 +17,12 @@ import { Menu } from './app.interface';
 import { AuthService } from './services/auth.service';
 import Swal from 'sweetalert2';
 import { FooterComponent } from './components/footer/footer.component';
-import { CarregamentoComponent } from './components/carregamento/carregamento.component';
 import { GlobalFunctions } from './services/global.service';
+import { environment } from '../environments/environment';
+import { ToastComponent } from './components/toast/toast.component';
+import { CardProdutoComponent } from './components/card-produto/card-produto.component';
+import { AvaliacaoComponent } from './components/avaliacao/avaliacao.component';
+import { CarregamentoComponent } from './components/carregamento/carregamento.component';
 
 @Component({
   selector: 'app-root',
@@ -33,7 +37,10 @@ import { GlobalFunctions } from './services/global.service';
     HttpClientModule,
     ...globalModules,
     FooterComponent,
-    CarregamentoComponent
+    CarregamentoComponent,
+    AvaliacaoComponent,
+    CardProdutoComponent,
+    ToastComponent
     ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -48,12 +55,13 @@ export class AppComponent {
   inicialLoad = true;
   carregando = true;
   itemAtivo = '';
+  environment = environment;
+  
   constructor(library: FaIconLibrary, private router: Router, private httpRequestStateService: HttpRequestStateService, private authService: AuthService, public GlobalFunctions: GlobalFunctions) {
     library.addIcons(
       faSquare,
       faCheckSquare,
     );
-
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         let strSplit = event.url.split('/');
@@ -63,8 +71,10 @@ export class AppComponent {
           this.itemAtivo = '';
         }
         console.log('Navigated to:', event.url);
+        
       }
     });
+    
 
     this.isLoading$ = this.httpRequestStateService.isLoading$;
 
@@ -131,7 +141,7 @@ export class AppComponent {
     this.authService.logout();
     this.GlobalFunctions.alerta('Logout Efetuado', 'Logout realizado com sucesso', 'success');
           setTimeout(() => {
-            if(window.location.pathname === "/"){
+            if(window.location.pathname === this.environment.baselocal || window.location.pathname === this.environment.baseprod){
               window.location.reload();
             }else{
               this.router.navigate(['/']);

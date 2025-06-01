@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { CarrinhoProdutos } from '../../app.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,21 @@ import { environment } from '../../../environments/environment';
 
 export class CartService {
   private apiUrl = `${environment.apiUrl}`; // Substitua pela URL correta da API do seu backend
+  public carrinhoTratados: Array<any> = []; // Inicialize como um array vazio
+
+  trataProdutosCarrinho(produtos: Array<CarrinhoProdutos>){
+    if(!produtos || produtos.length === 0) return [];
+    return produtos.map(
+    (item: CarrinhoProdutos) => {
+      item.produto.cor = item.cor;
+      item.produto.quantidade = item.quantidade;
+      item.produto.refId = item.id;
+      item.produto.tamanho_descricao = item.tamanho_detalhes?.descricao;
+      item.produto.tag_descricao = item.tag?.descricao;
+      return item.produto;
+    }
+    )
+  }
 
   constructor(
     private http: HttpClient

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { GlobalFunctions } from '../../services/global.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-top-bar',
@@ -23,14 +24,15 @@ export class TopBarComponent {
   busca: string = '';
   isDropdownOpen = false;
   isDropdownUsuarioOpen = false;
-  carrinhoTratados: Produto[] = [];
   produtosDados: Array<CarrinhoProdutos> = [];
 
   isLogado = false;
   private subscription!: Subscription;
+  environment = environment;
+  dropdownActions: any = [];
   
   constructor(
-    private service: CartService,
+    public service: CartService,
     public authService: AuthService,
     private router: Router,
     public GlobalFunctions: GlobalFunctions,
@@ -70,7 +72,7 @@ export class TopBarComponent {
     if(this.isLogado){
       this.service.getProdutos().subscribe(
         (response) => {
-          this.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
+          this.service.carrinhoTratados = this.service.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
         },
         () => {
           this.GlobalFunctions.alertaDadosServidor();
@@ -85,7 +87,7 @@ export class TopBarComponent {
 
         this.service.getProdutosDados(ids).subscribe(
           (response) => {
-            this.carrinhoTratados = this.trataProdutosDados(response.data);
+            this.service.carrinhoTratados = this.trataProdutosDados(response.data);
           },
           () => {
             this.GlobalFunctions.alertaDadosServidor();
@@ -95,21 +97,7 @@ export class TopBarComponent {
     }
   }
 
-  trataProdutosCarrinho(produtos: Array<CarrinhoProdutos>){
-
-    return produtos.map(
-    (item: CarrinhoProdutos) => {
-      item.produto.cor = item.cor;
-      item.produto.quantidade = item.quantidade;
-      item.produto.refId = item.id;
-      item.produto.tamanho_descricao = item.tamanho_detalhes?.descricao;
-      item.produto.tag_descricao = item.tag?.descricao;
-
-
-      return item.produto;
-    }
-    )
-  }
+  
 
   trataProdutosDados(produtos: Produto[]): Produto[] {
     return this.produtosDados.map((item, i) => {
@@ -121,7 +109,7 @@ export class TopBarComponent {
 
   get valorTotal(): string{
     let valor: number = 0;
-    this.carrinhoTratados.forEach((item: Produto) => {
+    this.service.carrinhoTratados.forEach((item: Produto) => {
       valor += item.valor * item.quantidade;
     });
 
@@ -130,7 +118,7 @@ export class TopBarComponent {
 
   get quantidadeProdutos(): number{
     let quantidade: number = 0;
-    this.carrinhoTratados.forEach((item: Produto) => {
+    this.service.carrinhoTratados.forEach((item: Produto) => {
       quantidade += item.quantidade;
     })
     return quantidade;
@@ -143,7 +131,7 @@ export class TopBarComponent {
       this.GlobalFunctions.alerta('Logout Efetuado', 'Logout realizado com sucesso', 'success');
 
       setTimeout(() => {
-        if(window.location.pathname === "/"){
+        if(window.location.pathname === this.environment.baselocal || window.location.pathname === this.environment.baseprod){
           window.location.reload();
         }else{
           this.router.navigate(['/']);
@@ -202,5 +190,13 @@ export class TopBarComponent {
 
   changeStatusMenuInterno(){
     this.GlobalFunctions.showMenuInterno = !this.GlobalFunctions.showMenuInterno;
+  }
+
+  dropdownMenuManipulator(action: number, index: string){
+    if(!this.dropdownActions){
+      this.dropdownActions = [];
+    } 
+    
+    this.dropdownActions[index] = action; 
   }
 }

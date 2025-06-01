@@ -6,6 +6,7 @@ import { HttpClient
  } from '@angular/common/http';
 import { Usuario, UsuarioCadastrar } from '../app.interface.js';
 import { GlobalFunctions } from './global.service.js';
+import { ToastService } from '../components/toast/toast.service.js';
 
 interface AuthResponse {
   token: string; 
@@ -23,7 +24,7 @@ export class AuthService {
   private usuarioLogadoSubject = new BehaviorSubject<boolean>(this.calculateIsUsuarioLogado());
   public isUsuarioLogado$ = this.usuarioLogadoSubject.asObservable();
 
-  constructor(private http: HttpClient, private GlobalFunctions: GlobalFunctions) {
+  constructor(private http: HttpClient, private GlobalFunctions: GlobalFunctions, public toast: ToastService) {
     if(this.getToken() && !this.isUsuarioLogado()) {
       this.getInfoUsuario().subscribe(
         (res) => {
@@ -31,8 +32,10 @@ export class AuthService {
           this.GlobalFunctions.gerenciaMenuExterno(this.usuarioLogado.tipo_usuario.descricao);
           this.updateUsuarioLogado();
         },
-        () => {
-          this.GlobalFunctions.alertaDadosServidor();
+        (res) => {
+          if(res.message == 'Unauthorized'){
+        //    this.toast.show('Você não está autenticado. Por favor, faça login.', 'error');
+          }
         }
       );
     }else if(this.getToken()){

@@ -8,6 +8,8 @@ import { globalModules } from '../../../globalModules';
 import { CarregamentoComponent } from '../../../components/carregamento/carregamento.component';
 import Swal from 'sweetalert2';
 import { GlobalFunctions } from '../../../services/global.service';
+import { ToastComponent } from '../../../components/toast/toast.component';
+import { ToastService } from '../../../components/toast/toast.service';
 
 @Component({
   selector: 'app-editar-endereco',
@@ -23,7 +25,7 @@ export class EditarEnderecoComponent {
   carregando = true;
   isCheckout: boolean = false;
 
-  constructor(private fb: FormBuilder, private enderecoService: EnderecoService,  private route: ActivatedRoute,  private router: Router, private globalFunctions: GlobalFunctions) {
+  constructor(public toast: ToastService, private fb: FormBuilder, private enderecoService: EnderecoService,  private route: ActivatedRoute,  private router: Router, private globalFunctions: GlobalFunctions) {
     this.enderecoForm = this.fb.group({
       cep: ['', [Validators.required, Validators.minLength(8)]],
       logradouro: ['', Validators.required],
@@ -81,19 +83,18 @@ export class EditarEnderecoComponent {
   onSubmit() {
     if (this.enderecoForm.valid) {
       const formData = this.enderecoForm.value;
-
       this.enderecoService.update(this.idEndereco, formData).subscribe(
         (res) => {
         this.globalFunctions.alerta('Endereço Atualizado', 'O endereço foi atualizado com sucesso.', 'success');
         this.gerAfterRouter();
         },
         () => {
-          this.globalFunctions.alerta('Erro ao Atualizar Endereço', 'Ocorreu uma falha ao atualizar o endereço. Verifique os dados do formulário e tente novamente.', 'error');
+        this.toast.show('Erro ao atualizar endereço', 'error');
         }
       );
       
     } else {
-      this.globalFunctions.alerta('Erro ao Atualizar Endereço', 'Alguns dados do formulário estão inválidos. Por favor, revise as informações e tente novamente.', 'error');
+      this.toast.show('Alguns dados do formulário estão inválidos. Por favor, revise as informações e tente novamente.', 'error');
     }
   }
 
@@ -104,11 +105,13 @@ export class EditarEnderecoComponent {
     let cepReplace = cep.replaceAll('-','');
 
     if (cepReplace && cepReplace.length === 8) {
+      this.toast.show('Buscando CEP...', 'info');
       this.enderecoService.getEnderecoPorCep(cepReplace).subscribe(
         (data) => {
           if (data.erro) {
-            console.error('CEP não encontrado');
+            this.toast.show('CEP Inválido', 'error');
           } else {
+            this.toast.show('CEP Encontrado', 'success');
             this.enderecoForm.patchValue({
               logradouro: data.logradouro,
               bairro: data.bairro,
@@ -119,11 +122,12 @@ export class EditarEnderecoComponent {
           }
         },
         (error) => {
+          this.toast.show('Erro ao buscar CEP', 'error');
           console.error('Erro ao buscar CEP:', error);
         }
       );
     } else {
-      console.error('CEP inválido');
+      this.toast.show('CEP Inválido', 'error');
     }
   }
 

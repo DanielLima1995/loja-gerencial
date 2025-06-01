@@ -20,7 +20,7 @@ export interface CarrinhoProdutos {
     ativo?: boolean;
     data: string; // formato ISO ou ajustar conforme necessário
     imagens: Galeria[];
-    imagemPrincipal?: Galeria;
+    imagemPrincipal: Galeria;
     tagsProdutos?: TagsProdutos[];
     refId?:number; //gerenciamento fake - front 
     tamanho?: number;

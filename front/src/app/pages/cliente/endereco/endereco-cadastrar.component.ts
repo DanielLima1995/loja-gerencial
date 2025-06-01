@@ -6,12 +6,12 @@ import { EnderecoService } from './endereco.service';
 import { globalModules } from '../../../globalModules';
 import { Router } from '@angular/router';
 import { GlobalFunctions } from '../../../services/global.service';
+import { ToastComponent } from '../../../components/toast/toast.component';
+import { ToastService } from '../../../components/toast/toast.service';
 
 @Component({
   selector: 'app-endereco-cadastrar',
-  imports: [...globalModules,
-    
-    
+  imports: [...globalModules, ToastComponent
   ],
   templateUrl: './endereco-cadastrar.component.html',
 })
@@ -19,7 +19,7 @@ export class EnderecoCadastrarComponent {
   enderecoForm: FormGroup;
   isCheckout: boolean = false;
 
-  constructor(private fb: FormBuilder, private enderecoService: EnderecoService, private router: Router, private globalFunctions: GlobalFunctions) {
+  constructor(public toastService: ToastService ,private fb: FormBuilder, private enderecoService: EnderecoService, private router: Router, private globalFunctions: GlobalFunctions) {
     this.enderecoForm = this.fb.group({
       cep: ['', [Validators.required, Validators.minLength(8)]],
       logradouro: ['', Validators.required],
@@ -50,6 +50,7 @@ export class EnderecoCadastrarComponent {
     if (typeof window !== "undefined") {
       this.isCheckout = window.location.pathname.indexOf('checkout') > -1;
     }
+
   }
 
   onSubmit() {
@@ -57,41 +58,47 @@ export class EnderecoCadastrarComponent {
       const formData = this.enderecoForm.value;
 
       if (formData.id) {
+        this.toastService.show('O endereço está sendo atualizado.', 'info');
         this.enderecoService.update(formData.id, formData).subscribe(
           (res) => {
             this.globalFunctions.alerta('Endereço Atualizado', 'O endereço foi atualizado com sucesso.', 'success');
           },
           () => {
-            this.globalFunctions.alerta('Erro ao Atualizar Endereço', 'Ocorreu uma falha ao atualizar o endereço. Verifique os dados do formulário e tente novamente.', 'error');
+            this.toastService.show('Ocorreu uma falha ao atualizar o endereço. Verifique os dados do formulário e tente novamente.', 'error');
           }
           );
       } else {
         this.enderecoService.store(formData).subscribe(
           (res) => {
             if(this.isCheckout){
+            this.globalFunctions.alerta('Endereço Atualizado', 'O endereço foi atualizado com sucesso.', 'success');
               this.router.navigate(['/checkout']);
             }else{
+              this.toastService.show('Endereço cadastrado com sucesso!', 'success');
               this.router.navigate(['/cliente/enderecos']);
             }
           },
           () => {
-            this.globalFunctions.alerta('Erro ao Cadastrar Endereço', 'Ocorreu uma falha ao cadastrar o endereço. Verifique os dados do formulário e tente novamente.', 'error');
+            this.toastService.show('Erro ao cadastrar endereço', 'error');
           }
         );
       }
     } else {
+      this.toastService.show('Formulário inválido. Verifique os campos e tente novamente.', 'error');
       console.error('Formulário inválido');
     }
   }
 
   onBuscarCep() {
-    const cep = this.enderecoForm.get('cep')?.value;
+    let cep = this.enderecoForm.get('cep')?.value;
+    cep = cep ? cep.replace(/\D/g, '') : ''; // Remove caracteres não numéricos
 
     if (cep && cep.length === 8) {
+      this.toastService.show('Buscando endereço pelo CEP...', 'info');
       this.enderecoService.getEnderecoPorCep(cep).subscribe(
         (data) => {
           if (data.erro) {
-            console.error('CEP não encontrado');
+            this.toastService.show('CEP não encontrado', 'error');
           } else {
             this.enderecoForm.patchValue({
               logradouro: data.logradouro,

@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [...globalModules,AppComponent],
+      imports: [...globalModules,AppComponent, ToastComponent],
     }).compileComponents();
   });
 
