@@ -16,17 +16,22 @@ export class VendasService {
   ) {}
 
   getVendas(page: number = 1) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/vendas?page=${page}`);
+    return this.http.get<any>(`${this.apiUrl}/Vendas`, {
+      headers: {
+        'X-Page-Number': String(page),
+        'X-Page-Size': '15',
+      },
+    });
   }
 
   alteraStatusVenda(id:number, status:string) : Observable<any>{
-    return this.http.post(`${this.apiUrl}/venda/${id}/status`, {
+    return this.http.put(`${this.apiUrl}/Vendas/${id}`, {
       status: status
     });
   }
 
   getVenda(id:number) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/venda/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/Vendas/${id}`);
   }
 }
 

@@ -21,11 +21,9 @@ export class SelectTamanhosComponent {
 
   }
 
-  get tamanhosDisponiveis(): []{
-    if(!this.items || !this.items['Tamanho']) return [];
-
-    let tamanhos = this.items['Tamanho'];   
-    return tamanhos;
+  get tamanhosDisponiveis(): any[]{
+    if (Array.isArray(this.items)) return this.items;
+    return this.items?.['Tamanho'] ?? [];
   }
 
   sendSelectedItem(value: number){

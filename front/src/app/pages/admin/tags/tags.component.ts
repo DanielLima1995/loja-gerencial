@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { TagsService } from './tags.service';
-import { TagsWithKeys } from '../../../app.interface';
+import { mapTagsGroups, TagsGrupo, TagsWithKeys } from '../../../app.interface';
 import { CarregamentoComponent } from '../../../components/carregamento/carregamento.component';
 import { globalModules } from '../../../globalModules';
 import { GlobalFunctions } from '../../../services/global.service';
@@ -29,10 +29,10 @@ import { GlobalFunctions } from '../../../services/global.service';
       this.carregando = true;
 
       this.tagsService.getTags().subscribe(
-        (response) => {
+        (response: TagsGrupo[]) => {
           this.carregando = false;
 
-          this.tags = response;
+          this.tags = mapTagsGroups(response);
         },
         () => {
           this.globalFunctions.alertaDadosServidor();

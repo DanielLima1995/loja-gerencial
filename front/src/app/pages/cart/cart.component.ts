@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { SelectCoresComponent } from '../../components/select-cores/select-cores.component';
 import Swal from 'sweetalert2';
 import { SelectTamanhosComponent } from '../../components/select-tamanhos/select-tamanhos.component';
-import { Carrinho, CarrinhoProdutos, ItemExclusaoRef, Produto, TagsProdutos, TagsTratadas } from '../../app.interface';
+import { CarrinhoProduto, CarrinhoProdutoInput, ItemExclusaoRef, Produto, TagsTratadas } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 import { Router } from '@angular/router';
 import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
@@ -32,8 +32,7 @@ import { ToastService } from '../../components/toast/toast.service';
 })
 export class CartComponent {
   @Input() checkout: boolean = false;
-  carrinhoProdutos: Carrinho[] = [];
-  produtosDados: Array<CarrinhoProdutos> = [];
+  produtosDados: CarrinhoProdutoInput[] = [];
   coresDisponiveis: Array<TagsTratadas>[] = [];
   itemExclusao: ItemExclusaoRef = {
     id: 0,
@@ -65,8 +64,8 @@ export class CartComponent {
     if (this.authService.getToken()) {
       this.carregando = true;
       this.service.getProdutos().subscribe(
-        (response: { data: { carrinhoProdutos: CarrinhoProdutos[] } }) => {
-          this.service.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
+        (response) => {
+          this.service.carrinhoTratados = this.trataProdutosCarrinho(response.produtos ?? []);
           this.gerCoresDisponiveis();
           this.carregando = false;
         },
@@ -77,11 +76,11 @@ export class CartComponent {
     } else {
       if (typeof window !== 'undefined' && localStorage.getItem('carrinho')) {
         this.produtosDados = JSON.parse(localStorage.getItem('carrinho') ?? "[]");
-        let ids = this.produtosDados.map((item) => item.id);
+        let ids = this.produtosDados.map((item) => item.produtoId);
 
         this.service.getProdutosDados(ids).subscribe(
-          (response: { data: Produto[] }) => {
-            this.service.carrinhoTratados = this.trataProdutosDados(response.data);
+          (response: Produto[]) => {
+            this.service.carrinhoTratados = this.trataProdutosDados(response);
             this.gerCoresDisponiveis();
             //localStorage.removeItem('carrinho');
           },
@@ -95,16 +94,8 @@ export class CartComponent {
 
   gerCoresDisponiveis() {
      this.service.carrinhoTratados.forEach((element: Produto) => {
-      let filtrados = element.tagsProdutos?.filter(
-        (item: TagsProdutos) => item.tags.tipo === 'Cores'
-      ) || [];
-
-      this.coresDisponiveis[element.id] = filtrados.map((item: TagsProdutos) => ({
-        id: item.tags.id,
-        descricao: item.tags.descricao,
-        cor: item.tags.cor,
-        tipo: item.tags.tipo,
-      }));
+      this.coresDisponiveis[element.id] = (element.tags ?? [])
+        .filter((tag) => tag.tipo.toLowerCase() === 'cores');
 
       this.gerTamanhosDisponiveis();
     });
@@ -112,17 +103,8 @@ export class CartComponent {
 
   gerTamanhosDisponiveis() {
      this.service.carrinhoTratados.forEach((element: Produto) => {
-      let filtrados = element.tagsProdutos?.filter(
-        (item: TagsProdutos) => item.tags.tipo === 'Tamanho'
-      ) || [];
-
-      this.tamanhosDisponiveis[element.id] = filtrados.map((item: TagsProdutos): TagsTratadas => ({
-        id: item.tags.id,
-        descricao: item.tags.descricao,
-        cor: item.tags.cor,
-        tipo: item.tags.tipo,
-        tamanho: item.tags.tamanho,
-      })) as TagsTratadas[];
+      this.tamanhosDisponiveis[element.id] = (element.tags ?? [])
+        .filter((tag) => tag.tipo.toLowerCase() === 'tamanho');
     });
 
     this.carregando = false;
@@ -130,23 +112,21 @@ export class CartComponent {
 
   trataProdutosDados(produtos: Produto[]): Produto[] {
     return this.produtosDados.map((item, i) => {
-      let produto = produtos.find((el) => el.id === Number(item.id));
+      let produto = produtos.find((el) => el.id === Number(item.produtoId));
       item.refId = i + 1;
-      return Object.assign(item, produto);
+      return Object.assign({}, produto, {
+        quantidade: item.quantidade,
+        corId: item.corId,
+        tamanhoId: item.tamanhoId,
+        generoId: item.generoId,
+        refId: item.refId,
+      }) as Produto;
     });
   }
 
-  trataProdutosCarrinho(produtos: CarrinhoProdutos[]): Produto[] {
+  trataProdutosCarrinho(produtos: CarrinhoProduto[]): Produto[] {
     if(!produtos || produtos.length === 0) return [];
-
-    return produtos.map((item) => {
-      item.produto!.cor = item.cor;
-      item.produto!.quantidade = item.quantidade;
-      item.produto!.refId = item.id;
-      item.produto!.tamanho = item.tamanho;
-
-      return item.produto!;
-    });
+    return this.service.trataProdutosCarrinho(produtos);
   }
 
   alteraCor() {
@@ -167,18 +147,18 @@ export class CartComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         if (this.authService.getToken()) {
-          this.service.removeItemCarrinho(id).subscribe();
-          this.toast.show('Produto removido com sucesso!', 'success');
-          this.carregando = true;
-          this.service.getProdutos().subscribe(
-            (response: { data: { carrinhoProdutos: CarrinhoProdutos[] } }) => {
-               this.service.carrinhoTratados = this.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
-            }
-          );
+          this.service.removeItemCarrinho(id).subscribe({
+            next: () => {
+              this.toast.show('Produto removido com sucesso!', 'success');
+              this.init();
+            },
+            error: () => this.globalFunctions.alerta('Erro ao Remover Produto', 'Não foi possível remover o produto do carrinho.', 'error'),
+          });
+          return;
         } else {
-          let produtosAtuais: Array<CarrinhoProdutos> = JSON.parse(localStorage.getItem('carrinho') ?? "[]");
+          let produtosAtuais: CarrinhoProdutoInput[] = JSON.parse(localStorage.getItem('carrinho') ?? "[]");
 
-          let novosProdutos = produtosAtuais.filter((item, indice: number) => indice !== id);
+          let novosProdutos = produtosAtuais.filter((item, indice) => indice + 1 !== id);
 
           localStorage.setItem('carrinho', JSON.stringify(novosProdutos));
         }
@@ -191,24 +171,40 @@ export class CartComponent {
   atualizaProduto(ref: string, indice: number, event: any, id: number = 0) {
 
     if (this.authService.getToken()) {
-      let dados = {
-        ref: ref,
-        indice: indice,
-        id: id,
-        valor: event.id ?? event,
-      };
-
-      this.service.atualizaProduto(dados).subscribe(
-        (response: any) => {
-          console.log(response);
-        },
-        () => {
-          this.globalFunctions.alerta('Falha ao Atualizar Produto', 'Falha ao atualizar o produto no carrinho. Tente novamente mais tarde.', 'success');
+      const carrinho = this.service.carrinho;
+      if (!carrinho) return;
+      const produtos = carrinho.produtos.map((item) => {
+        const produto: CarrinhoProdutoInput = {
+          produtoId: item.produtoId,
+          tamanhoId: item.tamanhoId,
+          quantidade: item.quantidade,
+          generoId: item.generoId,
+          corId: item.corId,
+        };
+        if (item.id === id) {
+          if (ref === 'quantidade') produto.quantidade = event.id ?? event;
+          if (ref === 'tamanho') produto.tamanhoId = event.id ?? event;
+          if (ref === 'cor') produto.corId = event.id ?? event;
         }
-      );
+        return produto;
+      });
+
+      this.service.atualizaProduto(produtos).subscribe({
+        error: () => this.globalFunctions.alerta('Falha ao Atualizar Produto', 'Falha ao atualizar o produto no carrinho. Tente novamente mais tarde.', 'error'),
+      });
     } else {
-     // this.carrinhoTratados[indice][ref] = event.id ?? event;
-      localStorage.setItem('carrinho', JSON.stringify( this.service.carrinhoTratados));
+      const produto = this.service.carrinhoTratados[indice];
+      if (ref === 'quantidade') produto.quantidade = event.id ?? event;
+      if (ref === 'tamanho') produto.tamanhoId = event.id ?? event;
+      if (ref === 'cor') produto.corId = event.id ?? event;
+      localStorage.setItem('carrinho', JSON.stringify(this.service.carrinhoTratados.map((item) => ({
+        produtoId: item.id,
+        tamanhoId: item.tamanhoId ?? 0,
+        quantidade: item.quantidade ?? 0,
+        generoId: item.generoId ?? 0,
+        corId: item.corId ?? 0,
+        refId: item.refId,
+      }))));
     }
   }
 

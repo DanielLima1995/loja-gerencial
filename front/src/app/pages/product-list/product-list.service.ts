@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { ProdutoFilter, TagsFilter, TagsGrupo } from '../../app.interface';
 
 @Injectable({
 providedIn: 'root'
@@ -15,16 +15,25 @@ export class ProductListService {
     private http: HttpClient
   ) {}
 
-  getProdutos(page: number = 1, filtros: string = "", qtdItens: number = 15) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/produtos?per_page=${qtdItens}&page=${page}${filtros ? '&' + filtros : ''}`);
+  getProdutos(page: number = 1, filtros: Partial<ProdutoFilter> = {}, pageSize: number = 15) {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('perPage', pageSize);
+
+    Object.entries(filtros).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, String(value));
+      }
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/Produtos`, { params });
   }
 
-  getImagem(id: number) : Observable<any>{
-    return this.http.get(this.apiUrl + '/produto-fotos/' + id +'/1');
-  }
-
-  getTags(cadastro:boolean = false) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/tags?filter[isCadastro]=${cadastro}`);
+  getTags(cadastro: boolean = false) {
+    const params: Partial<TagsFilter> = { isCadastro: cadastro };
+    return this.http.get<TagsGrupo[]>(`${this.apiUrl}/Tags`, {
+      params: { isCadastro: String(params.isCadastro) },
+    });
   }
 }
 

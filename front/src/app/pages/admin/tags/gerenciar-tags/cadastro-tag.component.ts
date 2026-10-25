@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup,  Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { TagsService } from '../tags.service';
-import { TagsWithKeys } from '../../../../app.interface';
+import { mapTagsGroups, TagsGrupo, TagsWithKeys } from '../../../../app.interface';
 import { globalModules } from '../../../../globalModules';
 import { GlobalFunctions } from '../../../../services/global.service';
 
@@ -33,8 +33,8 @@ export class CadastroTagComponent implements OnInit  {
 
     ngOnInit(){
       this.tagsService.getTags().subscribe(
-        (response) => {
-          this.tags = response;
+        (response: TagsGrupo[]) => {
+          this.tags = mapTagsGroups(response);
         },
         () => {
           this.globalFunctions.alertaDadosServidor();

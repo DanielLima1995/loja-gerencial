@@ -15,7 +15,7 @@ export class CheckoutService {
   ) {}
 
   finalizaCompra(data: any){
-    return this.http.post(`${this.apiUrl}/checkout`, data);
+    return this.http.post(`${this.apiUrl}/Vendas`, data);
   }
 }
 

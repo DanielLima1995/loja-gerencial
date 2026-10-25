@@ -24,12 +24,11 @@ export class EnderecoCadastrarComponent {
       cep: ['', [Validators.required, Validators.minLength(8)]],
       logradouro: ['', Validators.required],
       bairro: ['', Validators.required],
-      localidade: ['', Validators.required],
+      cidade: ['', Validators.required],
       uf: ['', Validators.required],
-      estado: ['', Validators.required],
       numero: ['', Validators.required],
       complemento: [''],
-      ponto_referencia: [''],
+      pontoReferencia: [''],
     });
   }
 
@@ -39,12 +38,11 @@ export class EnderecoCadastrarComponent {
       cep: '',
       logradouro: '',
       bairro: '',
-      localidade: '',
+      cidade: '',
       uf: '',
-      estado: '',
       numero: '',
       complemento: '',
-      ponto_referencia: '',
+      pontoReferencia: '',
     });
 
     if (typeof window !== "undefined") {
@@ -57,21 +55,10 @@ export class EnderecoCadastrarComponent {
     if (this.enderecoForm.valid) {
       const formData = this.enderecoForm.value;
 
-      if (formData.id) {
-        this.toastService.show('O endereço está sendo atualizado.', 'info');
-        this.enderecoService.update(formData.id, formData).subscribe(
-          (res) => {
-            this.globalFunctions.alerta('Endereço Atualizado', 'O endereço foi atualizado com sucesso.', 'success');
-          },
-          () => {
-            this.toastService.show('Ocorreu uma falha ao atualizar o endereço. Verifique os dados do formulário e tente novamente.', 'error');
-          }
-          );
-      } else {
-        this.enderecoService.store(formData).subscribe(
+      this.enderecoService.store(formData).subscribe(
           (res) => {
             if(this.isCheckout){
-            this.globalFunctions.alerta('Endereço Atualizado', 'O endereço foi atualizado com sucesso.', 'success');
+            this.globalFunctions.alerta('Endereço Cadastrado', 'O endereço foi cadastrado com sucesso.', 'success');
               this.router.navigate(['/checkout']);
             }else{
               this.toastService.show('Endereço cadastrado com sucesso!', 'success');
@@ -82,7 +69,6 @@ export class EnderecoCadastrarComponent {
             this.toastService.show('Erro ao cadastrar endereço', 'error');
           }
         );
-      }
     } else {
       this.toastService.show('Formulário inválido. Verifique os campos e tente novamente.', 'error');
       console.error('Formulário inválido');
@@ -103,9 +89,8 @@ export class EnderecoCadastrarComponent {
             this.enderecoForm.patchValue({
               logradouro: data.logradouro,
               bairro: data.bairro,
-              localidade: data.localidade,
+              cidade: data.localidade,
               uf: data.uf,
-              estado: data.uf, // ou mapeie para outro formato de estado, se necessário
             });
           }
         },

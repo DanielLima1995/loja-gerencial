@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 
 import Swal from 'sweetalert2';
 import { ProdutosCadastradosService } from './produtos-cadastrados.service';
-import { Produto } from '../../../app.interface';
 import { CarregamentoComponent } from '../../../components/carregamento/carregamento.component';
 import { PaginationComponent } from '../../../components/pagination/pagination.component';
 import { globalModules } from '../../../globalModules';
 import { GlobalFunctions } from '../../../services/global.service';
+import { Produto, setImagemPrincipal } from '../../../app.interface';
 
 
 @Component({
@@ -26,7 +26,7 @@ import { GlobalFunctions } from '../../../services/global.service';
 
     products: Produto[] = [];
     paginaAtual = 1;
-    qtdElementosPagina = 5;
+    qtdElementosPagina = 15;
     currentPage: number = 1;
     totalPages: number = 1;
     collapses: { [key: string]: boolean } = {};
@@ -49,9 +49,9 @@ import { GlobalFunctions } from '../../../services/global.service';
     gerGetProdutos(page: number = this.currentPage ){
       this.service.getProdutos(page).subscribe(
         res => {
-          this.products = res.data;
-          this.currentPage = res.meta.current_page;
-          this.totalPages = res.meta.last_page;
+          this.products = res.items.map((produto: Produto) => setImagemPrincipal(produto));
+          this.currentPage = res.page;
+          this.totalPages = res.totalPages;
           this.carregando = false;
 
         },() => {

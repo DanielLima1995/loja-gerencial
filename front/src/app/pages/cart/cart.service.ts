@@ -1,55 +1,58 @@
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CarrinhoProdutos } from '../../app.interface';
+import { Carrinho, CarrinhoProduto, Produto, setImagemPrincipal } from '../../app.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class CartService {
-  private apiUrl = `${environment.apiUrl}`; // Substitua pela URL correta da API do seu backend
-  public carrinhoTratados: Array<any> = []; // Inicialize como um array vazio
+  private apiUrl = `${environment.apiUrl}`;
+  public carrinhoTratados: Produto[] = [];
+  public carrinho?: Carrinho;
 
-  trataProdutosCarrinho(produtos: Array<CarrinhoProdutos>){
-    if(!produtos || produtos.length === 0) return [];
-    return produtos.map(
-    (item: CarrinhoProdutos) => {
-      item.produto.cor = item.cor;
-      item.produto.quantidade = item.quantidade;
-      item.produto.refId = item.id;
-      item.produto.tamanho_descricao = item.tamanho_detalhes?.descricao;
-      item.produto.tag_descricao = item.tag?.descricao;
-      return item.produto;
+  constructor(private http: HttpClient) {}
+
+  trataProdutosCarrinho(produtos: CarrinhoProduto[]): Produto[] {
+    if (!produtos || produtos.length === 0) return [];
+
+    return produtos.map((item) => setImagemPrincipal({
+      ...item.produto,
+      corId: item.corId,
+      generoId: item.generoId,
+      tamanhoId: item.tamanhoId,
+      quantidade: item.quantidade,
+      refId: item.id,
+      tamanhoDescricao: item.tamanho?.descricao,
+      tagDescricao: item.cor?.descricao,
+    }));
+  }
+
+  getProdutos(): Observable<Carrinho> {
+    return this.http.get<Carrinho>(`${this.apiUrl}/Carrinho`).pipe(
+      tap((carrinho) => this.carrinho = carrinho)
+    );
+  }
+
+  getProdutosDados(ids: number[]): Observable<Produto[]> {
+    let params = new HttpParams();
+    ids.forEach((id) => params = params.append('produtosIds', id));
+    return this.http.get<Produto[]>(`${this.apiUrl}/Produtos/produtosSemLogin`, { params }).pipe(
+      map((produtos) => produtos.map(setImagemPrincipal))
+    );
+  }
+
+  removeItemCarrinho(id: number) {
+    return this.http.delete(`${this.apiUrl}/Carrinho/${id}`);
+  }
+
+  atualizaProduto(
+    produtos: Pick<CarrinhoProduto, 'produtoId' | 'tamanhoId' | 'quantidade' | 'generoId' | 'corId'>[]
+  ) {
+    if (!this.carrinho) {
+      throw new Error('Não há carrinho carregado para atualizar.');
     }
-    )
-  }
-
-  constructor(
-    private http: HttpClient
-  ) {}
-
-  getProdutos() : Observable<any>{
-    return this.http.get(`${this.apiUrl}/carrinho`);
-  }
-
-  getProdutosDados(ids: Array<number>) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/carrinho/produtos/dados?produtos=${ids}`);
-  }
-
-  removeItemCarrinho(id:number){
-    return this.http.delete(`${this.apiUrl}/carrinho/excluir/produto/${id}`);
-  }
-  
-  atualizaProduto(data: any){
-    return this.http.post(`${this.apiUrl}/carrinho/editar/produto`, data);
+    return this.http.put(`${this.apiUrl}/Carrinho/${this.carrinho.id}`, produtos);
   }
 }
-
-
-/*
-Copyright Google LLC. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at https://angular.io/license
-*/

@@ -22,9 +22,9 @@
                 </div>
                 <div class="col-12 overflow-auto overflow-tags">
                   <div class="d-flex flex-wrap mt-2">
-                    <a class="btn dv-tags bg-caddet text-white" [routerLink]="'/admin/tags/editar/' + tag.id" *ngFor="let tag of tags.dados[chave]">
-                      {{tag.tipo}}
-                    </a>
+                    <span class="btn dv-tags bg-caddet text-white" *ngFor="let tag of tags.dados[chave]">
+                      {{tag.descricao}}
+                    </span>
                   </div>
                 </div>
               </div>

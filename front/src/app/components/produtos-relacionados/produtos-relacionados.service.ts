@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { Produto } from '../../app.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,9 @@ export class ProdutosRelacionadosService {
     private http: HttpClient
   ) {}
 
-  getProdutosRelacionados(idProduto: any, qtdTotal: number) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/produtos/relacionados/${qtdTotal}/${idProduto}`);
+  getProdutosRelacionados(idProduto?: number): Observable<Produto[]> {
+    const params = idProduto == null ? {} : { id: idProduto };
+    return this.http.get<Produto[]>(`${this.apiUrl}/Produtos/produtosRelacionados`, { params });
   }
 }
 

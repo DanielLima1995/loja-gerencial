@@ -48,35 +48,46 @@ export class LoginComponent {
     if(!form.valid) return;
     this.carregando = true;
     this.authService.login(this.email, this.senha).subscribe({
-      next:(response: any) => {
-        this.carregando = false;
-        
-        this.authService.usuarioLogado = response.data.usuario;
-        this.authService.saveToken(response.data.token, response.data.expires_at);
+      next:(authData) => {
+        if (
+          !authData.email ||
+          !authData.nomeUsuario ||
+          !['Admin', 'Cliente'].includes(authData.tipoUsuario) ||
+          !authData.token ||
+          !authData.dataExpiracaoToken
+        ) {
+          this.carregando = false;
+          this.globalFunctions.alerta('Resposta Inválida', 'A API não retornou os dados esperados para iniciar a sessão.', 'error');
+          return;
+        }
+
+        this.authService.saveUser({
+          email: authData.email,
+          nome: authData.nomeUsuario,
+          tipoUsuario: authData.tipoUsuario,
+        });
+        this.authService.saveToken(authData.token, authData.dataExpiracaoToken);
         // Redirecionar o usuário para uma página protegida (exemplo: página inicial)
 
 
-        if (typeof window !== 'undefined' && localStorage.getItem('carrinho')) {
-          let produtosDados = JSON.parse(localStorage.getItem('carrinho') ?? "[]");
-          if(produtosDados){
-            this.produtosService.gerenciarCarrinho(produtosDados).subscribe(
-              () => {
-                this.afterLogin();
-                return;
-              }
-            );
-          }
-          this.globalFunctions.gerenciaMenuExterno(this.authService.usuarioLogado.tipo_usuario.descricao);
+        const carrinhoLocal = typeof window !== 'undefined'
+          ? localStorage.getItem('carrinho')
+          : null;
+        const produtosDados = carrinhoLocal ? JSON.parse(carrinhoLocal) : [];
+        if (produtosDados.length > 0) {
+          this.produtosService.gerenciarCarrinho(produtosDados).subscribe({
+            next: () => {
+              localStorage.removeItem('carrinho');
+              this.afterLogin();
+            },
+            error: () => {
+              this.authService.logout();
+              this.carregando = false;
+              this.globalFunctions.alerta('Erro ao Sincronizar Carrinho', 'A sessão não foi iniciada porque não foi possível transferir o carrinho para sua conta. Tente novamente.', 'error');
+            },
+          });
+        } else {
           this.afterLogin();
-        }else{
-          this.authService.updateUsuarioLogado();
-          this.globalFunctions.gerenciaMenuExterno(this.authService.usuarioLogado.tipo_usuario.descricao);
-
-          if(this.isCheckout){
-            this.router.navigate(['/checkout']);
-          }else{
-            this.router.navigate(['/']);
-          }
         }
 
         
@@ -89,7 +100,9 @@ export class LoginComponent {
   }
 
   afterLogin(){
+    this.carregando = false;
     this.authService.updateUsuarioLogado();
+    this.globalFunctions.gerenciaMenuExterno(this.authService.tipoUsuario);
 
     if(this.isCheckout){
       this.router.navigate(['/checkout']);

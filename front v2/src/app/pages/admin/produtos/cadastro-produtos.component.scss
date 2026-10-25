@@ -1,0 +1,16 @@
+.img-thumbnail {
+    width: 100%; /* Largura total do contêiner */
+    aspect-ratio: 5 / 6; /* Define a proporção 5:6 */
+    object-fit: cover; /* Garante que a imagem preencha o contêiner mantendo a proporção */
+    border-radius: 0.25rem; /* Mantém o estilo da classe Bootstrap */
+  }
+  
+  .position-relative .btn-danger {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .dv-preview {
+    border: 1px solid rgba(0,0,0,.1);
+    margin: 10px;
+}

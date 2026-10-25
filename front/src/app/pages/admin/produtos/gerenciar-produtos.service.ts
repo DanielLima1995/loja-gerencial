@@ -16,15 +16,15 @@ export class GerenciarProdutosService {
   ) {}
 
   cadastrarProduto(dados: ProdutoBody) : Observable<any>{
-    return this.http.post(`${this.apiUrl}/produto`, dados);
+    return this.http.post(`${this.apiUrl}/Produtos`, dados);
   }
 
   getProduto(id: number) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/produto/detalhes/${id}`);
+    return this.http.get(`${this.apiUrl}/Produtos/${id}`);
   }
 
   editarProduto(id: number, body: ProdutoBody) : Observable<any>{
-    return this.http.post(`${this.apiUrl}/produto/${id}`, body);
+    return this.http.put(`${this.apiUrl}/Produtos/${id}`, body);
   }
 }
 

@@ -37,12 +37,9 @@ export class SelectCoresComponent {
     }
   }
 
-  get coresDisponiveis(): []{
-    if(!this.tags || !this.tags['Cores']) return [];
-
-    let cores = this.tags['Cores'];   
-    console.log(cores);
-    return cores;
+  get coresDisponiveis(): any[]{
+    if (Array.isArray(this.tags)) return this.tags;
+    return this.tags?.['Cores'] ?? [];
   }
 
   sendSelectedColor(){

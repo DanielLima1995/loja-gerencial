@@ -8,7 +8,7 @@ import { ProductPreviewComponent } from './product-preview/product-preview.compo
 import Swal from 'sweetalert2';
 import { GerenciarProdutosService } from './gerenciar-produtos.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TagsWithKeys, Tag, PreviewData, Produto, TagsProdutos, Galeria } from '../../../app.interface';
+import { mapTagsGroups, TagsGrupo, TagsWithKeys, Tag, PreviewData, Produto, ProdutoBody, setImagemPrincipal } from '../../../app.interface';
 import { CarregamentoComponent } from '../../../components/carregamento/carregamento.component';
 import { globalModules } from '../../../globalModules';
 import { GlobalFunctions } from '../../../services/global.service';
@@ -52,7 +52,6 @@ export class EditarProdutosComponent implements OnInit  {
   tagsObrigatorias = ['Cores', 'Tamanho'];
   produto!: Produto;
   idProduto = 0;
-  tagsProduto: { [key: string]: TagsProdutos[] } = {};
   carregando: boolean = false;
 
   constructor(private productListService: ProductListService, private fb: FormBuilder, private gerenciarProdutosService: GerenciarProdutosService, private route: ActivatedRoute,   private globalFunctions: GlobalFunctions, private router: Router){
@@ -75,10 +74,10 @@ export class EditarProdutosComponent implements OnInit  {
     this.carregando = true;
 
     this.productListService.getTags(true).subscribe(
-      res => {
+      (res: TagsGrupo[]) => {
         this.carregando = false;
 
-        this.tags = res;
+        this.tags = mapTagsGroups(res);
       },
       () => {
         this.globalFunctions.alertaDadosServidor();
@@ -94,8 +93,7 @@ export class EditarProdutosComponent implements OnInit  {
 
     this.gerenciarProdutosService.getProduto(this.idProduto).subscribe(
       res => {
-        this.produto = res.data?.produto;
-        this.tagsProduto = res.data?.tags;
+        this.produto = setImagemPrincipal(res);
         this.init();
       },
       () => {
@@ -107,26 +105,20 @@ export class EditarProdutosComponent implements OnInit  {
   init(){
     this.formulario.patchValue({
       descricao: this.produto.descricao,
-      descricao_basica: this.produto.descricao_basica,
+      descricao_basica: this.produto.descricaoBasica,
       produto_ativo: this.produto.ativo ? 'on' : '',
       valor: this.globalFunctions.valorConvertido(this.produto.valor, true),
       titulo: this.produto.titulo,
     });
 
-    Object.keys(this.tagsProduto).map((e) => {
-      if(!this.tagsSelecionadas[e]) this.tagsSelecionadas[e] = [];
-      this.tagsSelecionadas[e] = this.tagsProduto[e].map(
-        (item: any) => {
-          return item;
-        }
-      )
-    });
+    this.tagsSelecionadas = (this.produto.tags ?? []).filter(Boolean).reduce((groups, tag) => {
+      (groups[tag.tipo] ??= []).push(tag);
+      return groups;
+    }, {} as Record<string, Tag[]>);
 
-    this.previewImages = this.produto.imagens.map(
-      (item: Galeria) => {
-        return item.imagem
-      }
-    )
+    this.previewImages = [...this.produto.imagens]
+      .sort((a, b) => a.referencia - b.referencia)
+      .map((item) => item.imagemUrl);
   }
 
   triggerFileInput(): void {
@@ -174,17 +166,18 @@ export class EditarProdutosComponent implements OnInit  {
 
   onSubmit(): void {
     if (this.formulario.valid) {
-      let convertTags: any = {};
-      Object.keys(this.tagsSelecionadas).map((e) => {
-        convertTags[e] = this.tagsSelecionadas[e];
-      });
+      const value = this.formulario.getRawValue();
+      const body: ProdutoBody = {
+        titulo: value.titulo,
+        descricaoBasica: value.descricao_basica,
+        descricao: value.descricao,
+        valor: this.parseValor(value.valor),
+        ativo: value.produto_ativo === 'on',
+        imagens: this.previewImages.map((imagemUrl, referencia) => ({ imagemUrl, referencia })),
+        tagIds: Object.values(this.tagsSelecionadas).flat().map((tag) => tag.id),
+      };
 
-      this.formulario.patchValue({
-        imagens: this.previewImages,
-        tags: convertTags
-      });
-
-      this.gerenciarProdutosService.editarProduto(this.idProduto, this.formulario.value).subscribe(
+      this.gerenciarProdutosService.editarProduto(this.idProduto, body).subscribe(
         () => {
           this.globalFunctions.alerta('Produto Editado', 'Produto editado com sucesso', 'success');
           setTimeout(() => {
@@ -212,6 +205,11 @@ export class EditarProdutosComponent implements OnInit  {
 
     return dados;
 
+  }
+
+  private parseValor(value: string | number): number {
+    if (typeof value === 'number') return value;
+    return Number(value.replace(/\./g, '').replace(',', '.'));
   }
 
   gerTagsSelecionadas(target: any, item: string, id:number ){
@@ -259,9 +257,6 @@ export class EditarProdutosComponent implements OnInit  {
   }
 
   isChecked(item: string, id: number): boolean {
-    return this.tagsProduto[item] && this.tagsProduto[item]?.filter(
-      (el: TagsProdutos) => el.id == id
-    )?.length > 0;
+    return this.tagsSelecionadas[item]?.some((tag) => tag.id === id) ?? false;
   }
 }
-

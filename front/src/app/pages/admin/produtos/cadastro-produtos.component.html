@@ -74,7 +74,7 @@
                                         <div class="row p-4 pb-2 pt-2">
                                                 <div class="form-check form-switch col-3" *ngFor="let subItem of tags.dados[item]">
                                                     <input class="form-check-input" type="checkbox" role="switch"  (change)="gerTagsSelecionadas($event, item, subItem.id)" id="flexSwitchCheckChecked">
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{subItem.tipo}}</label>
+                                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{subItem.descricao}}</label>
                                             </div>
                                         </div>
                                     </div>

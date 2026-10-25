@@ -1,0 +1,40 @@
+<ng-container *ngIf="carregando">
+  <app-carregamento></app-carregamento>
+</ng-container>
+<div class="bg-default" [ngClass]="{
+  'd-none': carregando
+}">
+  <div class="card p-4">
+    <div class="d-flex  justify-content-between card-title">
+      <h4>Tags</h4>
+      <button type="submit" class="btn btn-primary radius-0 bg-flower-blue float-right" [routerLink]="'/admin/tags/cadastrar'" >Nova Tag</button>
+    </div>  
+    <div class="card-body padding-lateral-responsivo">
+      <div class="conteudo bg-white" *ngIf="tags">
+          <div class="card right-shadow mb-3" *ngFor="let chave of tags.chaves">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-12 bold">
+                  {{chave}}
+                </div>
+                <div class="col-12">
+                  <hr />
+                </div>
+                <div class="col-12 overflow-auto overflow-tags">
+                  <div class="d-flex flex-wrap mt-2">
+                    <span class="btn dv-tags bg-caddet text-white" *ngFor="let tag of tags.dados[chave]">
+                      {{tag.descricao}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+      </div>
+    </div>
+    
+  </div>
+  
+  
+</div>

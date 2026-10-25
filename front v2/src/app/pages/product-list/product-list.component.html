@@ -1,0 +1,91 @@
+
+<div class="container p-0">
+  <div class="card background-primario">
+    <div class="card-body">
+      <div class="mb-4 d-none d-md-flex justify-content-between form-row">
+        <h3 class="text-flower-blue">Produtos Encontrados</h3>
+        <select class="custom-select border-none  right-shadow radius-0 mr-2" *ngIf="filterProdutos.length > 0">
+          <option>Mais Recentes</option>
+          <option>Mais Vistos</option>
+        </select>
+      </div>
+        <div class="d-sm-none">
+          <div class="mb-4 d-flex">
+            <div class="w-50 mr-2">
+            <select class="custom-select border-none  right-shadow radius-0 w-100" *ngIf="filterProdutos.length > 0">
+              <option>Mais Recentes</option>
+              <option>Mais Vistos</option>
+            </select>
+            </div>
+            <div class="w-50 ml-2" *ngIf="isMobile">
+            <button class="btn btn-primary btn-lg radius-0 bg-flower-blue w-100" (click)="changeConteudoFiltros()">Filtros</button>
+            </div>
+          </div>
+        </div>
+        <div class="d-md-flex">
+        <div class="w-small-100 w-large-25 mr-4"  [ngClass]="{
+          'bg-white mt-4 mb-4': isMobile,
+          'd-none': isMobile && !showFiltros
+        }" *ngIf="tags">
+          <div class="card  mb-2  right-shadow  d-none d-sm-block" *ngFor="let item of tags.chaves; let index = index;">
+            <div>
+              <div class="card-header bg-white radius-0 p-0" id="headingOne">
+                <h2 class="mb-0">
+                  <button class="btn btn-link btn-block text-left  d-flex justify-content-between p-4 w-100 text-flower-blue bold" (click)="gerenciaCollapse(item)" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    {{ item }}  <i *ngIf="collapses[item] != true" class="fa fa-arrow-down" aria-hidden="true"></i>
+                    <i *ngIf="collapses[item] === true" class="fa fa-arrow-up" aria-hidden="true"></i>
+                  </button>
+                  
+                </h2>
+              </div>
+              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" [ngClass]="{
+                'show': collapses[item] === true
+              }" data-parent="#accordionExample">
+                <div class="card-body" *ngFor="let subItem of tags.dados[item]">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      [checked]="filtros[item] === subItem.id"
+                      (change)="collapseFiltros(item, subItem.id)"
+                      type="radio"
+                      [name]="item"
+                      [value]="subItem.id"
+                    >
+                    <label class="form-check-label text-flower-blue bold" for="flexRadioDefault1">
+                      {{ subItem.descricao }}
+                    </label>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="w-small-100 w-large-75 conteudo">
+          
+          <ng-container *ngIf="carregando">
+            <app-carregamento></app-carregamento>
+          </ng-container>
+          <div class="row" *ngIf="!carregando">
+            <div class="col-12 col-md-6 col-xl-4 d-grid mb-4 justify-content-center" *ngFor="let p of filterProdutos; let c = index">
+                <app-card-produto [imagem]="p.imagemPrincipal?.imagemUrl ?? ''" [link]="'/produto/detalhes/' + p.id" [titulo]="p.titulo" [descricao]="refatoraDescricao(p.descricaoBasica)" [valor]="p.valor"></app-card-produto>
+                   
+            </div>
+            <div>
+              <app-pagination  *ngIf="filterProdutos.length > 0"
+                [currentPage]="currentPage"
+                [totalPages]="totalPages"
+                (pageChanged)="onPageChanged($event)">
+              </app-pagination>
+            </div>
+            <div class="col-12 white radius-0 right-shadow p-0" *ngIf="filterProdutos.length == 0">
+              <div class="text-center fw-bolder p-4 bg-white">Nenhum Produtos Encontrado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>

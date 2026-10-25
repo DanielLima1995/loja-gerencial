@@ -11,7 +11,7 @@
         <div class="row" *ngIf="products">
             <ng-container  *ngFor="let p of products; let c = index">
                 <div class="col-12 col-lg-4 mt-4 d-flex  justify-content-center"  *ngIf="c < qtdTotal">
-                    <app-card-produto [imagem]="p.imagemPrincipal.imagem" [link]="'/produto/detalhes/' + p.id" [titulo]="p.titulo" [descricao]="refatoraDescricao(p.descricao_basica)" [valor]="p.valor"></app-card-produto>
+                    <app-card-produto [imagem]="p.imagemPrincipal?.imagemUrl ?? ''" [link]="'/produto/detalhes/' + p.id" [titulo]="p.titulo" [descricao]="refatoraDescricao(p.descricaoBasica)" [valor]="p.valor"></app-card-produto>
                 </div>
             </ng-container>
         </div>

@@ -13,19 +13,19 @@ export class EnderecoService {
   constructor(private http: HttpClient) {}
 
   store(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/endereco`, data);
+    return this.http.post(`${this.apiUrl}/ClienteEnderecos`, data);
   }
 
   index(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/enderecos`);
-  }
-
-  update(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/endereco/${id}`, data);
+    return this.http.get(`${this.apiUrl}/ClienteEnderecos`);
   }
 
   show(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/endereco/${id}`);
+    return this.http.get(`${this.apiUrl}/ClienteEnderecos/${id}`);
+  }
+
+  delete(id: number) {
+    return this.http.delete(`${this.apiUrl}/ClienteEnderecos/${id}`);
   }
 
   getEnderecoPorCep(cep: string): Observable<any> {

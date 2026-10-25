@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { Produto, Tag } from '../../app.interface';
+import { Produto, setImagemPrincipal, Tag } from '../../app.interface';
 import { InputNumericoComponent } from '../../components/input-numerico/input-numerico.component';
 import { ProdutosRelacionadosComponent } from '../../components/produtos-relacionados/produtos-relacionados.component';
 import { SelectCoresComponent } from '../../components/select-cores/select-cores.component';
@@ -38,6 +38,7 @@ export class ProductDetailsComponent {
   selectedColor: number = 0;
   currentValue: number = 1; // Valor inicial
   selectedTamanho: number = 0;
+  selectedGenero: number = 0;
   changeImagemAtiva: number = 0;
   carregando:boolean = true;
   carregandoVenda:boolean = false;
@@ -62,8 +63,15 @@ export class ProductDetailsComponent {
   init(){
     this.produtoService.getProduto(this.idProduto).subscribe(
       res => {
-        this.produto = res?.data?.produto;
-        this.tags = res?.data?.tags;
+        this.produto = setImagemPrincipal(res);
+        this.tags = (res.tags ?? []).filter(Boolean).reduce((grouped: Record<string, Tag[]>, tag: Tag) => {
+          const tipo = tag.tipo.toLowerCase() === 'genero' ? 'genero' : tag.tipo;
+          (grouped[tipo] ??= []).push(tag);
+          return grouped;
+        }, {});
+        if (this.generosDisponiveis.length === 1) {
+          this.selectedGenero = this.generosDisponiveis[0].id;
+        }
         this.carregando = false;
 
         window.scrollTo({
@@ -89,6 +97,12 @@ export class ProductDetailsComponent {
     return this.tags['Tamanho'];
   }
 
+  get generosDisponiveis(): Tag[] {
+    return Object.entries(this.tags)
+      .filter(([tipo]) => tipo.toLowerCase() === 'genero')
+      .flatMap(([, tags]) => tags);
+  }
+
 
   alteraCor(e: number){
     this.selectedColor = e;
@@ -96,6 +110,10 @@ export class ProductDetailsComponent {
 
   alteraTamanho(e: number){
     this.selectedTamanho = e;
+  }
+
+  alteraGenero(e: number){
+    this.selectedGenero = e;
   }
 
   sendCarrinho(){
@@ -114,15 +132,20 @@ export class ProductDetailsComponent {
       return;
     }
 
+    if(!this.selectedGenero){
+      this.globalFunctions.alerta('Selecione o Gênero', 'É necessário selecionar um gênero antes de adicionar o produto ao carrinho.', 'error');
+      return;
+    }
 
     if(!this.auth.getToken()){
 
       let atual = localStorage.getItem('carrinho') ?? "[]";
       let novo = {
-        id: this.route.snapshot.params['id'],
+        produtoId: Number(this.route.snapshot.params['id']),
         quantidade: this.currentValue,
-        cor: this.selectedColor,
-        tamanho: this.selectedTamanho
+        corId: this.selectedColor,
+        tamanhoId: this.selectedTamanho,
+        generoId: this.selectedGenero
       }
 
       let arrAtual: Array<any> = JSON.parse(atual); 
@@ -130,12 +153,18 @@ export class ProductDetailsComponent {
       
       if(arrAtual.filter(
         (item) => {
-          return item.id == this.route.snapshot.params['id'] && item.cor == this.selectedColor
+          return item.produtoId === novo.produtoId
+            && item.corId === novo.corId
+            && item.tamanhoId === novo.tamanhoId
+            && item.generoId === novo.generoId
         }
       ).length > 0){
         arrAtual = arrAtual.map(
           (item) => {
-            if(this.route.snapshot.params['id'] != item.id || item.cor != this.selectedColor ) return item;
+            if(item.produtoId !== novo.produtoId
+              || item.corId !== novo.corId
+              || item.tamanhoId !== novo.tamanhoId
+              || item.generoId !== novo.generoId) return item;
             item.quantidade += this.currentValue;
             return item;
           }
@@ -151,16 +180,17 @@ export class ProductDetailsComponent {
     }else{
       this.carregandoVenda = true;
       this.produtoService.gerenciarCarrinho([{
+        produtoId: Number(this.idProduto),
         quantidade: this.currentValue,
-        cor: this.selectedColor,
-        id: Number(this.idProduto),
-        tamanho: this.selectedTamanho
+        corId: this.selectedColor,
+        tamanhoId: this.selectedTamanho,
+        generoId: this.selectedGenero
       }]).subscribe(
         () => {
           this.carregandoVenda = false;
           this.cartService.getProdutos().subscribe(
             (response) => {
-              this.cartService.carrinhoTratados = response?.data?.carrinhoProdutos;
+              this.cartService.carrinhoTratados = this.cartService.trataProdutosCarrinho(response.produtos ?? []);
             },
             () => {
               this.globalFunctions.alertaDadosServidor();
@@ -202,5 +232,6 @@ export class ProductDetailsComponent {
     this.selectedColor = 0,
     this.idProduto = Number(this.route.snapshot.params['id']),
     this.selectedTamanho =  0
+    this.selectedGenero = 0
   }
 }

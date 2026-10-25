@@ -1,0 +1,19 @@
+<ng-container *ngIf="carregando">
+    <app-carregamento></app-carregamento>
+  </ng-container>
+<div [ngClass]="{
+    'd-none': carregando
+  }">
+    <div>
+        <h4>Produtos Relacionados</h4>
+    </div>
+    <div>
+        <div class="row" *ngIf="products">
+            <ng-container  *ngFor="let p of products; let c = index">
+                <div class="col-12 col-lg-4 mt-4 d-flex  justify-content-center"  *ngIf="c < qtdTotal">
+                    <app-card-produto [imagem]="p.imagemPrincipal?.imagemUrl ?? ''" [link]="'/produto/detalhes/' + p.id" [titulo]="p.titulo" [descricao]="refatoraDescricao(p.descricaoBasica)" [valor]="p.valor"></app-card-produto>
+                </div>
+            </ng-container>
+        </div>
+    </div>    
+</div>

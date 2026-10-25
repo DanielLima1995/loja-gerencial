@@ -39,8 +39,8 @@
                             <div class="bairro">{{endereco.bairro}}</div>
                         </div>
                         <div class="col-4">
-                            <label class="bold" for ="localidade">Cidade</label>
-                            <div class="localidade">{{endereco.localidade}}</div>
+                            <label class="bold" for ="cidade">Cidade</label>
+                            <div class="cidade">{{endereco.cidade}}</div>
                         </div>
                         <div class="col-4">
                             <label class="bold" for ="estado">UF</label>
@@ -51,14 +51,13 @@
                             <div class="complemento">{{endereco.complemento}}</div>
                         </div>
                         <div class="col-4">
-                            <label class="bold" for ="localidade">Ponto de Referência</label>
-                            <div class="ponto_referencia">{{endereco.ponto_referencia}}</div>
+                            <label class="bold" for ="pontoReferencia">Ponto de Referência</label>
+                            <div class="pontoReferencia">{{endereco.pontoReferencia}}</div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card-footer d-flex">
-                <button class="btn btn-primary radius-0 bg-gold"  *ngIf="endereco.id != idEnderecoSelecionado"  [routerLink]="'/cliente/enderecos/' + endereco.id + '/editar/checkout'">Editar</button>
                 <ng-container *ngIf="checkout">
                     <div class=" ml-2">
                         <button class="btn btn-primary radius-0 bg-flower-blue" *ngIf="endereco.id != idEnderecoSelecionado" (click)="selecionarEndereco(endereco.id)">Selecionar</button>

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../pages/cart/cart.service';
-import { CarrinhoProdutos, Menu, Produto, TagsProdutos } from '../../app.interface';
+import { CarrinhoProdutoInput, Menu, Produto } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -24,7 +24,7 @@ export class TopBarComponent {
   busca: string = '';
   isDropdownOpen = false;
   isDropdownUsuarioOpen = false;
-  produtosDados: Array<CarrinhoProdutos> = [];
+  produtosDados: CarrinhoProdutoInput[] = [];
 
   isLogado = false;
   private subscription!: Subscription;
@@ -72,7 +72,7 @@ export class TopBarComponent {
     if(this.isLogado){
       this.service.getProdutos().subscribe(
         (response) => {
-          this.service.carrinhoTratados = this.service.trataProdutosCarrinho(response?.data?.carrinhoProdutos);
+          this.service.carrinhoTratados = this.service.trataProdutosCarrinho(response.produtos ?? []);
         },
         () => {
           this.GlobalFunctions.alertaDadosServidor();
@@ -81,13 +81,11 @@ export class TopBarComponent {
     }else{
       if(typeof window !== 'undefined' && localStorage.getItem('carrinho')){
         this.produtosDados = JSON.parse(localStorage.getItem('carrinho') ?? "[]"); 
-        let ids = this.produtosDados.map(
-          (item: CarrinhoProdutos) => item.id
-        );
+        let ids = this.produtosDados.map((item) => item.produtoId);
 
         this.service.getProdutosDados(ids).subscribe(
           (response) => {
-            this.service.carrinhoTratados = this.trataProdutosDados(response.data);
+            this.service.carrinhoTratados = this.trataProdutosDados(response);
           },
           () => {
             this.GlobalFunctions.alertaDadosServidor();
@@ -101,16 +99,21 @@ export class TopBarComponent {
 
   trataProdutosDados(produtos: Produto[]): Produto[] {
     return this.produtosDados.map((item, i) => {
-      let produto = produtos.find((el) => el.id === Number(item.id));
-      item.refId = i;
-      return Object.assign(item, produto);
+      const produto = produtos.find((el) => el.id === Number(item.produtoId));
+      return Object.assign({}, produto, {
+        quantidade: item.quantidade,
+        corId: item.corId,
+        tamanhoId: item.tamanhoId,
+        generoId: item.generoId,
+        refId: i,
+      }) as Produto;
     });
   }
 
   get valorTotal(): string{
     let valor: number = 0;
     this.service.carrinhoTratados.forEach((item: Produto) => {
-      valor += item.valor * item.quantidade;
+      valor += item.valor * (item.quantidade ?? 0);
     });
 
     return this.GlobalFunctions.valorConvertido(valor);
@@ -119,7 +122,7 @@ export class TopBarComponent {
   get quantidadeProdutos(): number{
     let quantidade: number = 0;
     this.service.carrinhoTratados.forEach((item: Produto) => {
-      quantidade += item.quantidade;
+      quantidade += item.quantidade ?? 0;
     })
     return quantidade;
   }

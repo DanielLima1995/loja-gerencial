@@ -15,7 +15,7 @@
               data-bs-target="#slide-detalhes" [ngClass]="{
               'active': c == changeImagemAtiva
             }" class="active thumbnail-btn mb-2 " (click)="gerenciaImagemAtiva(c)" aria-current="true">
-              <img src="{{imagem.imagem}}" class="img-thumbnail right-shadow " alt="Preview">
+              <img src="{{imagem.imagemUrl}}" class="img-thumbnail right-shadow " alt="Preview">
             </button>
           </div>
       
@@ -24,7 +24,7 @@
             <div class="carousel-item" *ngFor="let imagem of produto?.imagens; let i = index" [ngClass]="{
               'active': i == changeImagemAtiva
             }">
-              <img src="{{imagem.imagem}}" class="d-block img-fluid right-shadow m-1" alt="Slide 1">
+              <img src="{{imagem.imagemUrl}}" class="d-block img-fluid right-shadow m-1" alt="Slide 1">
             </div>
           </div>
       
@@ -38,7 +38,7 @@
             </h4>
           </div>
           <div class="col-sm-12">
-            <small>{{produto.descricao_basica}}</small>
+            <small>{{produto.descricaoBasica}}</small>
           </div>
           <div  class="col-sm-12" *ngIf="tags && tags['Cores']">
             <label for="dv-cores" class="bold">
@@ -64,6 +64,13 @@
             </label>
             <div class="dv-tamanho p-2">
               <app-select-tamanhos  [items]="tamanhosDisponiveis" (selectedValue)="alteraTamanho($event)"></app-select-tamanhos>
+            </div>
+
+            <div class="col-sm-12" *ngIf="generosDisponiveis.length > 1">
+              <label for="dv-genero" class="bold">Gênero:</label>
+              <div class="dv-genero p-2">
+                <app-select-tamanhos [items]="generosDisponiveis" (selectedValue)="alteraGenero($event)"></app-select-tamanhos>
+              </div>
             </div>
           
           </div>

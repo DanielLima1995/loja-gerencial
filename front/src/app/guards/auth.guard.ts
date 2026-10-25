@@ -19,12 +19,15 @@ export class AuthGuard implements CanActivate {
     return this.authService.getInfoUsuario().pipe(
       map((res) => {
         const usuario = res?.data;
+        const tipoUsuario = typeof usuario?.tipoUsuario === 'string'
+          ? usuario.tipoUsuario
+          : usuario?.tipoUsuario?.descricao;
 
         if (usuario) {
-          if (url.startsWith('admin') && usuario.tipo_usuario.descricao === 'Admin') {
+          if (url.startsWith('admin') && tipoUsuario === 'Admin') {
             return true;
           }
-          if (url.startsWith('cliente') && usuario.tipo_usuario.descricao === 'Cliente') {
+          if (url.startsWith('cliente') && tipoUsuario === 'Cliente') {
             return true;
           }
         }
@@ -43,5 +46,3 @@ export class AuthGuard implements CanActivate {
     );
   }
 }
-
-

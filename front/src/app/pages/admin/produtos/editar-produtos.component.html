@@ -74,12 +74,12 @@
                                     </div>
                                 
                                     <div id="collapseOne" class="collapse" aria-labelledby="headingOne" [ngClass]="{
-                                      'show': (collapses[item] === true || (tagsProduto[item] && tagsProduto[item].length > 0))
+                                      'show': (collapses[item] === true || (tagsSelecionadas[item] && tagsSelecionadas[item].length > 0))
                                     }" data-parent="#accordionExample">
                                         <div class="row p-4 pb-2 pt-2">
                                                 <div class="form-check form-switch col-6 col-lg-3" *ngFor="let subItem of tags.dados[item]">
                                                     <input class="form-check-input" type="checkbox" role="switch"  (change)="gerTagsSelecionadas($event.target, item, subItem.id)" id="flexSwitchCheckChecked" [checked]="isChecked(item, subItem.id)">
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{subItem.tipo}}</label>
+                                                    <label class="form-check-label" for="flexSwitchCheckChecked">{{subItem.descricao}}</label>
                                             </div>
                                         </div>
                                     </div>

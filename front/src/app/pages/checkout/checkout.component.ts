@@ -21,8 +21,9 @@ import { Router } from '@angular/router';
   styleUrl: './checkout.component.scss'
 })
 export class CheckoutComponent {
-    cartaoValido:boolean = false
+    cartaoValido = false;
     idEndereco: number = 0;
+    formaPagamento: 'Crédito' | 'Débito' | 'Pix' = 'Crédito';
   
     constructor(
     public GlobalFunctions: GlobalFunctions,
@@ -39,14 +40,18 @@ export class CheckoutComponent {
     this.cartaoValido = isValid;
   }
 
+  get exigeValidacaoCartao(): boolean {
+    return this.formaPagamento !== 'Pix';
+  }
+
   changeEnderecoSelecionado(idEndereco: any){
     this.idEndereco = idEndereco;
   }
 
   finalizaCompra(){
-    if(this.idEndereco && this.cartaoValido){
+    if(this.idEndereco && (!this.exigeValidacaoCartao || this.cartaoValido)){
       this.checkoutService.finalizaCompra(
-        {endereco: this.idEndereco}
+        {enderecoId: this.idEndereco, formaPagamento: this.formaPagamento}
       ).subscribe(
         (data) => {
         this.GlobalFunctions.alerta('Compra Finalizada','Sua compra foi concluída com sucesso. O pagamento está em processamento.','success');

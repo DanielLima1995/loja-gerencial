@@ -35,11 +35,10 @@ export class CadastroComponent {
   onSubmit(form: any): void {
     if (form.valid) {
       let infoUsuario: UsuarioCadastrar = {
-        senha: this.senha,
-        confirmSenha: this.confirmSenha,
-        email:  this.email,
-        cpf: this.cpf,
-        nome: this.nome,
+        password: this.senha,
+        email: this.email,
+        documento: this.cpf.replace(/\D/g, ''),
+        name: this.nome,
       };
 
       this.carregando = true;

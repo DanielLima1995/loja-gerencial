@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { ProdutoFilter } from '../../../app.interface';
 
 @Injectable({
 providedIn: 'root'
@@ -15,16 +16,26 @@ export class ProdutosCadastradosService {
     private http: HttpClient
   ) {}
 
-  getProdutos(page: number = 1, filtros: string = "") : Observable<any>{
-    return this.http.get(`${this.apiUrl}/produtos?page=${page}${filtros ? '&' + filtros : ''}`);
+  getProdutos(page: number = 1, filtros: Partial<ProdutoFilter> = {}, pageSize: number = 15) : Observable<any>{
+    let params = new HttpParams()
+      .set('page', page)
+      .set('perPage', pageSize);
+
+    Object.entries(filtros).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, String(value));
+      }
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/Produtos`, { params });
   }
 
   getTags(cadastro:boolean = false) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/tags?filter[isCadastro]=${cadastro}`);
+    return this.http.get(`${this.apiUrl}/Tags?isCadastro=${cadastro}`);
   }
 
   removeProduto(id:number){
-    return this.http.delete(`${this.apiUrl}/produto/${id}`);
+    return this.http.delete(`${this.apiUrl}/Produtos/${id}`);
   }
 }
 

@@ -1,106 +1,105 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.js';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { HttpClient
-  
- } from '@angular/common/http';
-import { Usuario, UsuarioCadastrar } from '../app.interface.js';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { LoginRequest, Usuario, UsuarioCadastrar } from '../app.interface.js';
 import { GlobalFunctions } from './global.service.js';
 import { ToastService } from '../components/toast/toast.service.js';
 
 interface AuthResponse {
-  token: string; 
+  token: string;
+  email: string;
+  nomeUsuario: string;
+  tipoUsuario: string;
+  dataExpiracaoToken: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private usuarioSubject = new BehaviorSubject<any>(null);
-  
-  private apiUrl = `${environment.apiUrl}`; // Substitua pela URL correta da API do seu backend
+  private usuarioSubject = new BehaviorSubject<Usuario | null>(null);
+  private apiUrl = `${environment.apiUrl}`;
   public usuario = this.usuarioSubject.asObservable();
-  public usuarioLogado!: Usuario;
+  public usuarioLogado: Usuario = {} as Usuario;
   private usuarioLogadoSubject = new BehaviorSubject<boolean>(this.calculateIsUsuarioLogado());
   public isUsuarioLogado$ = this.usuarioLogadoSubject.asObservable();
 
-  constructor(private http: HttpClient, private GlobalFunctions: GlobalFunctions, public toast: ToastService) {
-    if(this.getToken() && !this.isUsuarioLogado()) {
-      this.getInfoUsuario().subscribe(
-        (res) => {
-          this.usuarioLogado = res.data;
-          this.GlobalFunctions.gerenciaMenuExterno(this.usuarioLogado.tipo_usuario.descricao);
-          this.updateUsuarioLogado();
-        },
-        (res) => {
-          if(res.message == 'Unauthorized'){
-        //    this.toast.show('Você não está autenticado. Por favor, faça login.', 'error');
-          }
-        }
-      );
-    }else if(this.getToken()){
-      this.GlobalFunctions.gerenciaMenuExterno(this.usuarioLogado.tipo_usuario.descricao);
+  constructor(
+    private http: HttpClient,
+    private globalFunctions: GlobalFunctions,
+    public toast: ToastService
+  ) {
+    if (this.getToken() && typeof window !== 'undefined') {
+      const usuario = localStorage.getItem('usuario');
+      if (usuario) {
+        this.usuarioLogado = JSON.parse(usuario) as Usuario;
+        this.usuarioSubject.next(this.usuarioLogado);
+      this.globalFunctions.gerenciaMenuExterno(this.tipoUsuario);
+        this.updateUsuarioLogado();
+      }
     }
   }
 
-  // Método de login
-  login(email: string, senha: string): Observable<AuthResponse> {
-    const body = { email, senha };
-    return this.http.post<AuthResponse>(this.apiUrl + '/login', body);
+  login(email: string, password: string): Observable<AuthResponse> {
+    const body: LoginRequest = { email, password };
+    return this.http.post<AuthResponse>(`${this.apiUrl}/Auth/login`, body);
   }
 
-  // Método para guardar o token
   saveToken(token: string, expiracao: string): void {
-    localStorage.setItem('authToken', `${token}`); // Armazena o token no localStorage
-    localStorage.setItem('expiracao', `${expiracao}`); // Armazena o token no localStorage
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('expiracao', expiracao);
+  }
+
+  saveUser(usuario: Usuario): void {
+    this.usuarioLogado = usuario;
+    this.usuarioSubject.next(usuario);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+    }
   }
 
   isTokenValid(expiresAt: string): boolean {
-    const expirationDate = new Date(expiresAt); // Converte a string para um objeto Date
-    const now = new Date(); 
-    console.log('ig');
-
-    console.log(expirationDate, now);
-
-    return now < expirationDate; // Retorna true se ainda não expirou
+    const expirationDate = new Date(expiresAt);
+    return !Number.isNaN(expirationDate.getTime()) && Date.now() < expirationDate.getTime();
   }
 
-  // Método para recuperar o token
   getToken(): string | null {
     if (typeof window !== 'undefined') {
-      let dataExpiracao = localStorage.getItem('expiracao') ?? '';
-      if(this.isTokenValid(dataExpiracao)){
-        console.log('token valido');
+      const dataExpiracao = localStorage.getItem('expiracao') ?? '';
+      if (this.isTokenValid(dataExpiracao)) {
         return localStorage.getItem('authToken');
-      }else{
-        console.log('token removido');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('expiracao');
       }
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('expiracao');
+      localStorage.removeItem('usuario');
     }
-
     return null;
   }
 
-  // Método para verificar se o usuário está autenticado
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    // Suponha que o token tem validade, por exemplo, com um tempo de expiração que você pode verificar aqui
-    // Adicione sua lógica de validação de token (como verificar a expiração, por exemplo)
-    return token !== null;
+    return this.getToken() !== null;
   }
 
-  // Método para fazer logout
   logout(): void {
+    if (this.getToken()) {
+      this.http.post<void>(`${this.apiUrl}/Auth/revoke`, null).subscribe({
+        error: () => this.toast.show('Não foi possível invalidar a sessão no servidor.', 'error'),
+      });
+    }
     this.usuarioLogado = {} as Usuario;
-    localStorage.removeItem('expiracao');
-    localStorage.removeItem('authToken');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('expiracao');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('usuario');
+    }
+    this.usuarioSubject.next(null);
     this.updateUsuarioLogado();
   }
 
-  cadastrarUsuario(dados: UsuarioCadastrar): Observable<any> {
-
-    return this.http.post<UsuarioCadastrar>(this.apiUrl + '/cadastro', dados);
+  cadastrarUsuario(dados: UsuarioCadastrar): Observable<unknown> {
+    return this.http.post(`${this.apiUrl}/Auth/register`, dados);
   }
 
   isUsuarioLogado(): boolean {
@@ -116,21 +115,20 @@ export class AuthService {
   }
 
   updateUsuarioLogado(): void {
-    const value = this.calculateIsUsuarioLogado();
-    this.usuarioLogadoSubject.next(value); // Notifica os observadores
+    this.usuarioLogadoSubject.next(this.calculateIsUsuarioLogado());
   }
 
-  get tipoUsuario(): string{
-    if(!this.usuarioLogado || !this.usuarioLogado.tipo_usuario?.descricao) return '';
-    if(this.usuarioLogado.tipo_usuario.descricao == 'Admin') return 'Admin';
-    if(this.usuarioLogado.tipo_usuario.descricao == 'Cliente') return 'Cliente';
-
-    return '';
+  get tipoUsuario(): string {
+    const tipoUsuario = this.usuarioLogado?.tipoUsuario;
+    const tipo = typeof tipoUsuario === 'string' ? tipoUsuario : tipoUsuario?.descricao;
+    return tipo === 'Admin' || tipo === 'Cliente' ? tipo : '';
   }
 
-  getInfoUsuario(): Observable<any> {
-    return this.http.get(this.apiUrl + '/usuario').pipe(
-      tap((res: any) => this.usuarioSubject.next(res.data)) // Atualiza o BehaviorSubject
-    );
+  getInfoUsuario(): Observable<{ data: Usuario | null }> {
+    const usuario = typeof window !== 'undefined' && localStorage.getItem('usuario')
+      ? JSON.parse(localStorage.getItem('usuario') as string) as Usuario
+      : this.usuarioLogado;
+    this.usuarioSubject.next(usuario);
+    return of({ data: usuario.tipoUsuario ? usuario : null });
   }
 }

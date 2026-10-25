@@ -8,7 +8,7 @@ import { ProductPreviewComponent } from './product-preview/product-preview.compo
 import Swal from 'sweetalert2';
 import { GerenciarProdutosService } from './gerenciar-produtos.service';
 import { Router } from '@angular/router';
-import { TagsWithKeys, PreviewData, Tag } from '../../../app.interface';
+import { mapTagsGroups, TagsGrupo, TagsWithKeys, PreviewData, ProdutoBody, Tag } from '../../../app.interface';
 import { globalModules } from '../../../globalModules';
 import { GlobalFunctions } from '../../../services/global.service';
 import { MaskMoneyDirective } from '../../../shared/mask-money.directive';
@@ -72,8 +72,8 @@ constructor(
 
 ngOnInit() {
   this.productListService.getTags(true).subscribe(
-    (res: TagsWithKeys) => {
-      this.tags = res;
+    (res: TagsGrupo[]) => {
+      this.tags = mapTagsGroups(res);
     },
     () => {
       this.globalFunctions.alertaDadosServidor();
@@ -138,12 +138,17 @@ onSubmit(): void {
       convertTags[e] = this.tagsSelecionadas[e];
     });
 
-    this.formulario.patchValue({
-      imagens: this.previewImages,
-      tags: convertTags
-    });
+    const value = this.formulario.getRawValue();
+    const body: ProdutoBody = {
+      titulo: value.titulo,
+      descricaoBasica: value.descricao_basica,
+      descricao: value.descricao,
+      valor: this.parseValor(value.valor),
+      imagens: this.previewImages.map((imagemUrl, referencia) => ({ imagemUrl, referencia })),
+      tagIds: Object.values(convertTags).flat().map((tag) => tag.id),
+    };
 
-    this.gerenciarProdutosService.cadastrarProduto(this.formulario.value).subscribe(
+    this.gerenciarProdutosService.cadastrarProduto(body).subscribe(
       () => {
         this.globalFunctions.alerta('Produto Cadastrado', 'Produto cadastrado com sucesso', 'success');
         setTimeout(() => {
@@ -159,12 +164,17 @@ onSubmit(): void {
   }
 }
 
+private parseValor(value: string | number): number {
+  if (typeof value === 'number') return value;
+  return Number(value.replace(/\./g, '').replace(',', '.'));
+}
+
 
 convertConteudoJson(): PreviewData {
   const dados: PreviewData = {
     descricao: this.formulario.controls['descricao'].value,
-    descricao_basica: this.formulario.controls['descricao_basica'].value,
-    produto_ativo: this.formulario.controls['produto_ativo'].value === 'on',
+    descricaoBasica: this.formulario.controls['descricao_basica'].value,
+    ativo: this.formulario.controls['produto_ativo'].value === 'on',
     valor: this.formulario.controls['valor'].value,
     titulo: this.formulario.controls['titulo'].value,
     tags: this.tagsSelecionadas,

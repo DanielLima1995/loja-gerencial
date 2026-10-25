@@ -4,7 +4,6 @@ import { CartComponent } from './pages/cart/cart.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { VendasClienteDetalhesComponent } from './pages/cliente/compras/vendas-cliente-detalhes.component';
 import { VendasClienteComponent } from './pages/cliente/compras/vendas-cliente.component';
-import { EditarEnderecoComponent } from './pages/cliente/endereco/editar-endereco.component';
 import { EnderecoCadastrarComponent } from './pages/cliente/endereco/endereco-cadastrar.component';
 import { EnderecoComponent } from './pages/cliente/endereco/endereco.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -14,7 +13,6 @@ import { ProductCadastradosComponent } from './pages/admin/produtos-cadastrados/
 import { CadastroProdutosComponent } from './pages/admin/produtos/cadastro-produtos.component';
 import { EditarProdutosComponent } from './pages/admin/produtos/editar-produtos.component';
 import { CadastroTagComponent } from './pages/admin/tags/gerenciar-tags/cadastro-tag.component';
-import { EditarTagComponent } from './pages/admin/tags/gerenciar-tags/editar-tag.component';
 import { TagsComponent } from './pages/admin/tags/tags.component';
 import { VendasDetalhesComponent } from './pages/admin/vendas/vendas-detalhes.component';
 import { VendasComponent } from './pages/admin/vendas/vendas.component';
@@ -47,11 +45,6 @@ export const routes: Routes = [
       { path: 'produtos/cadastrados', component: ProductCadastradosComponent },
       { path: 'tags', component: TagsComponent },
       { path: 'tags/cadastrar', component: CadastroTagComponent },
-      {
-        path: 'tags/editar/:id',
-        component: EditarTagComponent,
-        data: { renderMode: 'csr' },
-      },
       { path: 'vendas', component: VendasComponent },
       {
         path: 'venda/:id',
@@ -69,21 +62,11 @@ export const routes: Routes = [
         path: 'enderecos/cadastrar/checkout',
         component: EnderecoCadastrarComponent,
       },
-      {
-        path: 'enderecos/:id/editar',
-        component: EditarEnderecoComponent,
-        data: { renderMode: 'csr' },
-      },
       { path: 'enderecos', component: EnderecoComponent },
       { path: 'pedidos', component: VendasClienteComponent },
       {
         path: 'pedidos/detalhes/:id',
         component: VendasClienteDetalhesComponent,
-        data: { renderMode: 'csr' },
-      },
-      {
-        path: 'enderecos/:id/editar/checkout',
-        component: EditarEnderecoComponent,
         data: { renderMode: 'csr' },
       },
     ],

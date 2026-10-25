@@ -19,13 +19,13 @@
                         <div class="row">
                           <div class="col-12 d-flex">
                             <div class="coluna-imagem">
-                              <img src="{{ venda.vendaProdutos[0].produto.imagemPrincipal?.imagem }}" class="d-block" alt="..."/>
+                              <span class="d-block">Pedido #{{venda.id}}</span>
                           </div>
                           <div class="coluna-conteudo pl-4 w-100">
                               <div>
                                 <div class="d-flex justify-content-between bold ">
                                   <div class="bold">#{{venda.id}} </div>
-                                  <div>{{venda.data_compra | date: 'dd/MM HH:mm'}}</div>
+                                  <div>{{venda.dataCompra | date: 'dd/MM HH:mm'}}</div>
                                 </div>
                                 <hr />
                                 <div>
@@ -50,7 +50,7 @@
                               <div class="col-12 col-lg-4 ">
                                 <label for="cliente" class="bold">Cliente</label>
                                 <div>
-                                  {{venda.cliente.nome}}
+                                  {{venda.clienteId}}
                                 </div>
                               </div>
                               <div class="col-6 col-lg-4 mt-2">
@@ -62,7 +62,7 @@
                               <div class="col-6 col-lg-4">
                                 <label for="valor" class="bold"> </label>
                                 <div>
-                                  <h6>{{globalFunctions.valorConvertido(venda.valor)}}</h6>
+                                  <h6>{{globalFunctions.valorConvertido(venda.valorFinal)}}</h6>
                                 </div>
                               </div>
                             </div>

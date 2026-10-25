@@ -1,29 +1,24 @@
-<ng-container *ngIf="carregando">
-  <app-carregamento></app-carregamento>
-</ng-container>
-<div class="bg-default" [ngClass]="{
-  'd-none': carregando
-}">
-    <div class="card">
+<div class="bg-default">
+  <div class="card p-4">
+    <div class="card-title">
+        <h4>Cadastrar Tag</h4>
+      </div>
       <div class="card-body">
         <div class="conteudo bg-white" *ngIf="tags">
-            <div>
-                <h4>Editar Tag</h4>
-            </div>
             <form [formGroup]="formulario" >
-                <div class="row p-4 pt-2">
-                    <div class="col-6">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
                       <label  class="fw-bolder" for="titulo">Tipo</label>
                       <select formControlName="tipo" class="form-control ">
                         <option value="" disabled selected>Selecione uma Opção</option>
                         <option *ngFor="let chave of tags.chaves" value="{{chave}}">{{chave}}</option>
                       </select>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 col-lg-6 mt-2">
                       <label  class="fw-bolder" for="descricao">Descrição</label>
                       <input type="text"  formControlName="descricao" required id="descricao" class="form-control" name="descricao" required />
                     </div>
-                    <div class="col-12" *ngIf="formulario.get('tipo')?.value == 'Cores'">
+                    <div class="col-12 mt-2" *ngIf="formulario.get('tipo')?.value == 'Cores'">
                       <label  class="fw-bolder" for="color">Cor</label>
                       <input type="color" formControlName="cor"  class="form-control form-control-color" id="color" value="#fff" title="Escolha a cor">
                     </div>
@@ -32,7 +27,7 @@
         </div>
       </div>
       <div class="card-footer d-flex bg-white justify-content-end ">
-        <button type="submit" class="btn btn-primary btn-lg radius-0 bg-flower-blue" [disabled]="!formulario.valid" (click)="sendEdicao()">Salvar</button>
+        <button type="submit" class="btn btn-primary btn-lg radius-0 bg-flower-blue" [disabled]="!formulario.valid" (click)="sendCadastro()">Cadastrar</button>
       </div>
     </div>
   </div>

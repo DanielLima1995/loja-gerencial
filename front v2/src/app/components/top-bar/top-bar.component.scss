@@ -1,0 +1,113 @@
+.btn-search{
+    border-radius: 0px 5px 5px 0px;
+}
+
+.input-search{
+    border-radius: 5px 0px 0px 5px;
+}
+
+.dropdown-menu {
+    transition: opacity 0.3s ease;
+    border-radius: 6px !important;
+  }
+
+  .coluna-imagem, img{
+    height: 100px;
+    width: 80px;
+}
+
+.coluna-conteudo{
+
+}
+
+.valor{
+    font-size: 22px;
+}
+
+.dropdown-item{
+    width:310px !important;
+}
+
+.dropdown-toggle i, .btnGerenciaLogin{
+    transition: transform 0.3s ease; /* Suaviza a transição do efeito */
+}
+
+.dropdown-toggle i{
+    font-size: 24px; /* Tamanho padrão do ícone */
+    color: cornflowerblue;
+}
+
+.dropdown-toggle i:hover, .btnGerenciaLogin:hover{
+    transform: scale(1.5); /* Aumenta o tamanho em 50% */
+}
+
+.dropdown-toggle::after {
+    display: none; /* Oculta a seta */
+  }
+
+  .dropdownMenuUsuarioButton li:hover {
+    background-color: cornflowerblue;
+  }
+
+  .dropdownMenuUsuarioButton li a:hover {
+    color: white;
+  }
+
+  .btnGerenciaLogin span:hover{
+    color: cornflowerblue;
+  }
+
+  .w-150px{
+    width: 50px;
+  }
+
+  .logo{
+    width: 50px;
+    height: 50px;
+  }
+
+
+.dv-nav-fixa{
+  place-items: center;
+}
+
+ul.nav li.dropdown:hover ul.dropdown-menu{ display: block; }
+ul.nav .nav-item li.dropdown:hover, ul.nav .nav-item li:hover{
+  background-color: #777777;
+  color: white !important;
+}
+
+.nav-fixa ul ul.dropdown-menu{
+  width: 220px;
+}
+
+.nav-fixa ul ul.dropdown-menu li{
+  width: 220px;
+  cursor: pointer;
+}
+
+.offcanvas-body ul{
+      text-align-last: left;
+}
+
+.offcanvas-body ul li a i{
+    padding-right: 10px;
+    
+}
+
+.dv-nav-fixa .offcanvas-body ul li{
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.dv-nav-fixa .offcanvas-body ul li:last-child{
+    border-bottom: none;
+}
+
+.sub-menu-btn i{
+  font-size: 45px;
+}
+
+.offcanvas-header{
+  color: white;;
+}

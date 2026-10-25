@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import Swal from 'sweetalert2';
 import { VendasService } from './vendas.service';
 import { ActivatedRoute } from '@angular/router';
-import { Vendas, VendasProdutosTags } from '../../../app.interface';
+import { Vendas } from '../../../app.interface';
 import { CarregamentoComponent } from '../../../components/carregamento/carregamento.component';
 import { globalModules } from '../../../globalModules';
 import { GlobalFunctions } from '../../../services/global.service';
@@ -33,7 +33,10 @@ import { GlobalFunctions } from '../../../services/global.service';
     ngOnInit(){
       this.vendasService.getVenda(this.idVenda).subscribe(
         res => {
-          this.venda = res.data;
+          this.venda = {
+            ...res,
+            quantidadeTotal: res.produtos?.reduce((total: number, produto: any) => total + (produto?.quantidade ?? 0), 0) ?? 0,
+          };
           this.carregando = false;
         },
         () => {
@@ -42,14 +45,4 @@ import { GlobalFunctions } from '../../../services/global.service';
       );
     }
 
-    valueByKey(tags: VendasProdutosTags[], key: string){
-      let data = tags.filter(
-        (item: VendasProdutosTags) => {
-          return item.detalhes.tipo == key;
-        }
-      );
-
-
-      return data ? data[0].detalhes.descricao : ''; 
-    }
   }

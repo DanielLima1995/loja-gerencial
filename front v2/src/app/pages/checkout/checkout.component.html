@@ -1,0 +1,53 @@
+<div class="row d-flex justify-content-between background-primario">
+    <div class="col-12">
+        <div class="card p-4">
+            <div class="card-title">
+                <h4>Checkout</h4>
+              </div>
+            <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="row">
+                                <div class="col-12  d-flex justify-content-between">
+                                    <div>
+                                        <b>Endereço de Entrega</b>
+                                    </div>
+                                    <div><button  class="btn btn-primary btn-lg radius-0 bg-flower-blue"  [routerLink]="'/cliente/enderecos/cadastrar/checkout'" >Cadastrar</button></div>
+                                </div>
+                                <div class="col-12">
+                                    <app-enderecos (enderecoSelecionado)="changeEnderecoSelecionado($event)" [checkout]="true"></app-enderecos>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <b>Produtos</b>
+                                </div>
+                                <div class="col-12">
+                                    <app-cart [checkout]="true"></app-cart>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="bold" for="formaPagamento">Forma de pagamento</label>
+                            <select id="formaPagamento" class="form-control" [(ngModel)]="formaPagamento" (ngModelChange)="cartaoValido = false">
+                                <option value="Crédito">Crédito</option>
+                                <option value="Débito">Débito</option>
+                                <option value="Pix">Pix</option>
+                            </select>
+                        </div>
+                        <div class="col-12 p-0 mt-4 mb-4" *ngIf="exigeValidacaoCartao">
+                            <app-cartao (cartaoValido)="onCartaoValido($event)"></app-cartao>
+                        </div>
+                    </div>
+            </div>
+            <div *ngIf="GlobalFunctions.isMobile">
+                <button type="submit" (click)="finalizaCompra()" class="btn btn-primary btn-lg radius-0 bg-flower-blue w-100" >Finalizar Pedido</button>
+            </div>
+            <div *ngIf="!GlobalFunctions.isMobile">
+                <button type="submit" (click)="finalizaCompra()" class="btn btn-primary btn-lg radius-0 bg-flower-blue float-end" >Finalizar Pedido</button>
+            </div>
+        </div>
+    </div>
+</div>

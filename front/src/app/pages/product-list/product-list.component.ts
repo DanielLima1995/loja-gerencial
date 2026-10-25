@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ProductListService } from './product-list.service';
 import { ActivatedRoute } from '@angular/router';
-import { Produto, TagsWithKeys } from '../../app.interface';
+import { mapTagsGroups, Produto, ProdutoFilter, setImagemPrincipal, TagsGrupo, TagsWithKeys } from '../../app.interface';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { globalModules } from '../../globalModules';
 import { GlobalFunctions } from '../../services/global.service';
@@ -29,7 +29,7 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
     totalPages: number = 1;
     tags!: TagsWithKeys;
     collapses: { [key: string]: boolean } = {};
-    filtros: { [key: string]: number } = {};
+    filtros: Record<string, string | number | undefined> = {};
     stringBusca = '';
     isMobile: boolean = false;
     showFiltros: boolean = false;
@@ -48,7 +48,7 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
         if (typeof window !== "undefined") {
           let l = window.screen.width;
           this.isMobile = (l < 900);
-          this.qtdElementosPagina = (this.isMobile ? 10 : 15);
+          this.qtdElementosPagina = 15;
           this.filtros['busca'] = params.busca;
           this.init();
         }
@@ -60,7 +60,7 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
 
       this.service.getTags().subscribe(
         res => {
-          this.tags = res;
+          this.tags = mapTagsGroups(res as TagsGrupo[]);
         },
         () => {
           this.globalFunctions.alertaDadosServidor();
@@ -72,9 +72,9 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
       this.carregando = true;
       this.service.getProdutos(page, this.sendFiltros, this.qtdElementosPagina).subscribe(
         res => {
-          this.products = res.data;
-          this.currentPage = res.meta.current_page;
-          this.totalPages = res.meta.last_page;
+          this.products = res.items.map((produto: Produto) => setImagemPrincipal(produto));
+          this.currentPage = res.page;
+          this.totalPages = res.totalPages;
           this.carregando = false;
         },
         () => {
@@ -106,16 +106,21 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
       this.gerGetProdutos();
     }
 
-    get sendFiltros(){
-      let filtro: string = this.filtros['busca'] ? ('filter[busca]=' + this.filtros['busca']) : '';
-
-      for (let chave in this.filtros) {
-        if(chave != 'busca'){
-          filtro += `${filtro ? ',' : 'filter[tags]='}${this.filtros[chave]}`;
-        }
+    get sendFiltros(): Partial<ProdutoFilter> {
+      const filtros: Partial<ProdutoFilter> = {};
+      const titulo = this.filtros['busca'];
+      if (titulo) {
+        filtros.titulo = String(titulo);
       }
 
-      return filtro;
+      const tags = Object.entries(this.filtros)
+        .filter(([key, value]) => key !== 'busca' && value !== undefined)
+        .map(([, value]) => String(value));
+      if (tags.length) {
+        filtros.tags = tags.join(',');
+      }
+
+      return filtros;
     }
     
     refatoraDescricao(text: string){

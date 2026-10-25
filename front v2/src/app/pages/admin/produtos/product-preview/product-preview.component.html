@@ -1,0 +1,78 @@
+<div class="bg-default">
+  <div class="card bg-initial"  *ngIf="dadosCadastrados">
+    <div class="card-body p-0">
+      <div class="conteudo d-flex bg-white">
+        <div id="slide-detalhes" class="carousel slide d-flex">
+          <!-- Thumbnails on the left -->
+          <div class="carousel-thumbnails d-flex flex-column me-3">
+      
+            <button *ngFor="let imagem of dadosCadastrados?.imagens; let c = index" data-bs-slide-to="0" type="button"
+              data-bs-target="#slide-detalhes" [ngClass]="{
+              'active': c == 0
+            }" class="active thumbnail-btn" aria-current="true">
+              <img src="{{imagem}}" class="img-thumbnail" alt="Preview">
+            </button>
+          </div>
+      
+          <!-- Main carousel content -->
+          <div class="carousel-inner flex-grow-1">
+            <div class="carousel-item" *ngFor="let imagem of dadosCadastrados?.imagens; let i = index" [ngClass]="{
+              'active': i == 0
+            }">
+              <img src="{{imagem}}" class="d-block img-fluid" alt="Slide 1">
+            </div>
+          </div>
+      
+          <!-- Navigation controls -->
+      
+        </div>
+        <div class="row d-initial w-divisorias m-4">
+          <div class="col-sm-12">
+            <h4>
+              {{dadosCadastrados?.titulo}}
+            </h4>
+          </div>
+          <div class="col-sm-12">
+            <small>{{dadosCadastrados.descricaoBasica}}</small>
+          </div>
+          <div  class="col-sm-12" *ngIf="dadosCadastrados.tags['Cores']">
+            <label for="dv-cores" class="bold">
+              Cores Disponíveis:
+            </label>
+            <div class="dv-cores p-2">
+              <app-select-cores  [tags]="dadosCadastrados.tags['Cores']"></app-select-cores>
+            </div>
+          
+          </div>
+          <div  class="col-sm-12" >
+            <label for="dv-cores" class="bold">
+              Quantidade:
+            </label>
+            <div class="dv-quantidade p-2">
+              <app-input-numerico [min]="1" [max]="999" [step]="1"></app-input-numerico>
+            </div>
+          </div>
+
+          <div  class="col-sm-12" *ngIf="dadosCadastrados.tags['Tamanho']">
+            <label for="dv-tamanho" class="bold">
+              Tamanho:
+            </label>
+            <div class="dv-tamanho p-2">
+              <app-select-tamanhos  [items]="dadosCadastrados.tags['Tamanho']"></app-select-tamanhos>
+            </div>
+          
+          </div>
+          
+          <div  class="col-sm-12" >
+            <h2>R$: {{dadosCadastrados?.valor}}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="conteudo  bg-white mt-4 p-4">
+      <h4>Detalhes</h4>
+      <div [innerHTML]="dadosCadastrados.descricao"></div>
+
+      </div>
+  </div>
+  

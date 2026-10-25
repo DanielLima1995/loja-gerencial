@@ -25,7 +25,7 @@ import { GlobalFunctions } from '../../../services/global.service';
     @Input() isCliente: boolean = false;
     vendas: Vendas[] = [];
     paginaAtual = 1;
-    qtdElementosPagina = 5;
+    qtdElementosPagina = 15;
     currentPage: number = 1;
     totalPages: number = 1;
     collapses: { [key: string]: boolean } = {};
@@ -47,17 +47,18 @@ import { GlobalFunctions } from '../../../services/global.service';
     }
 
     gerGetVendas(page: number = this.currentPage ){
-      this.vendasService.getVendas(page).subscribe(
-        res => {
+      this.vendasService.getVendas(page).subscribe({
+        next: (res) => {
           this.carregando = false;
-          this.vendas = res.data;
-          this.currentPage = res.meta.current_page;
-          this.totalPages = res.meta.last_page;
-        }
-      ),
-      () => {
-        this.globalFunctions.alertaDadosServidor();
-      }
+          this.vendas = res.items.map((venda: Vendas) => ({
+            ...venda,
+            quantidadeTotal: venda.produtos?.reduce((total, produto) => total + (produto?.quantidade ?? 0), 0) ?? 0,
+          }));
+          this.currentPage = res.page;
+          this.totalPages = res.totalPages;
+        },
+        error: () => this.globalFunctions.alertaDadosServidor(),
+      });
     }
 
     gerenciaCollapse(indice: number){

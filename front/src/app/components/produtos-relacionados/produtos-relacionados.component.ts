@@ -2,7 +2,7 @@
 import { Component, Input } from '@angular/core';
 
 import { ProdutosRelacionadosService } from './produtos-relacionados.service';
-import { Produto } from '../../app.interface';
+import { Produto, setImagemPrincipal } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 import { GlobalFunctions } from '../../services/global.service';
 import { CarregamentoComponent } from '../carregamento/carregamento.component';
@@ -39,9 +39,11 @@ export class ProdutosRelacionadosComponent {
   
     ngOnInit(){
       this.carregando = true;
-      this.service.getProdutosRelacionados(null, this.qtdTotal).subscribe(
+      this.service.getProdutosRelacionados(this.idProduto || undefined).subscribe(
         res => {
-          this.products = res.data;
+          this.products = res
+            .slice(0, this.qtdTotal)
+            .map((produto: Produto) => setImagemPrincipal(produto));
           this.carregando = false;
         },
         () => {

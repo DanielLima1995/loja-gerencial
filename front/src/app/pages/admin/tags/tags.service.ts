@@ -16,15 +16,15 @@ export class TagsService {
   ) {}
 
   getTags() : Observable<any>{
-    return this.http.get(`${this.apiUrl}/tags`);
+    return this.http.get(`${this.apiUrl}/Tags`);
   }
 
   cadastrarTag(body: any) : Observable<any>{
-    return this.http.post(`${this.apiUrl}/tag`, body);
+    return this.http.post(`${this.apiUrl}/Tags`, body);
   }
 
-  editarTag(id:number, body: any) : Observable<any>{
-    return this.http.post(`${this.apiUrl}/tag/${id}`, body);
+  removerTag(id: number) {
+    return this.http.delete(`${this.apiUrl}/Tags/${id}`);
   }
 }
 

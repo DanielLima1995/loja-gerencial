@@ -29,7 +29,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 p-0 mt-4 mb-4">
+                        <div class="col-12 mt-4">
+                            <label class="bold" for="formaPagamento">Forma de pagamento</label>
+                            <select id="formaPagamento" class="form-control" [(ngModel)]="formaPagamento" (ngModelChange)="cartaoValido = false">
+                                <option value="Crédito">Crédito</option>
+                                <option value="Débito">Débito</option>
+                                <option value="Pix">Pix</option>
+                            </select>
+                        </div>
+                        <div class="col-12 p-0 mt-4 mb-4" *ngIf="exigeValidacaoCartao">
                             <app-cartao (cartaoValido)="onCartaoValido($event)"></app-cartao>
                         </div>
                     </div>
