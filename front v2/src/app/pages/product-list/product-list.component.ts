@@ -60,7 +60,7 @@ import { CarregamentoComponent } from '../../components/carregamento/carregament
 
       this.service.getTags().subscribe(
         res => {
-          this.tags = mapTagsGroups(res as TagsGrupo[]);
+          this.tags = mapTagsGroups(res);
         },
         () => {
           this.globalFunctions.alertaDadosServidor();

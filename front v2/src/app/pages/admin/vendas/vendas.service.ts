@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { PaginatedResponse, Vendas, VendaStatusInput } from '../../../app.interface';
 
 @Injectable({
 providedIn: 'root'
@@ -15,8 +16,8 @@ export class VendasService {
     private http: HttpClient
   ) {}
 
-  getVendas(page: number = 1) : Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/Vendas`, {
+  getVendas(page: number = 1) : Observable<PaginatedResponse<Vendas>>{
+    return this.http.get<PaginatedResponse<Vendas>>(`${this.apiUrl}/Vendas`, {
       headers: {
         'X-Page-Number': String(page),
         'X-Page-Size': '15',
@@ -24,14 +25,14 @@ export class VendasService {
     });
   }
 
-  alteraStatusVenda(id:number, status:string) : Observable<any>{
+  alteraStatusVenda(id:number, status:string) : Observable<unknown>{
     return this.http.put(`${this.apiUrl}/Vendas/${id}`, {
       status: status
-    });
+    } satisfies VendaStatusInput);
   }
 
-  getVenda(id:number) : Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/Vendas/${id}`);
+  getVenda(id:number) : Observable<Vendas>{
+    return this.http.get<Vendas>(`${this.apiUrl}/Vendas/${id}`);
   }
 }
 

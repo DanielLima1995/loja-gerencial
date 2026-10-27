@@ -1,12 +1,44 @@
-.coluna-imagem, img{
-    height: 200px;
-    width: 150px;
+.produto-venda-card {
+  border: 1px solid #e8edf2;
+  border-radius: 10px;
 }
 
-.coluna-conteudo{
+.produto-venda-imagem {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 120px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: #f1f3f5;
+}
 
+.produto-venda-dados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+
+  label {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  p {
+    margin: 0;
+  }
 }
 
 .valor{
     font-size: 22px;
+}
+
+@media (max-width: 575.98px) {
+  .produto-venda-card .card-body {
+    align-items: flex-start !important;
+  }
+
+  .produto-venda-imagem {
+    flex-basis: 72px;
+    width: 72px;
+    height: 96px;
+  }
 }

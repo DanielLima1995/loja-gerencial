@@ -2,6 +2,7 @@ import { HttpClient} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { TagInput, TagsGrupo } from '../../../app.interface';
 
 @Injectable({
 providedIn: 'root'
@@ -15,15 +16,15 @@ export class TagsService {
     private http: HttpClient
   ) {}
 
-  getTags() : Observable<any>{
-    return this.http.get(`${this.apiUrl}/Tags`);
+  getTags() : Observable<TagsGrupo[]>{
+    return this.http.get<TagsGrupo[]>(`${this.apiUrl}/Tags`);
   }
 
-  cadastrarTag(body: any) : Observable<any>{
+  cadastrarTag(body: TagInput) : Observable<unknown>{
     return this.http.post(`${this.apiUrl}/Tags`, body);
   }
 
-  removerTag(id: number) {
+  removerTag(id: number): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/Tags/${id}`);
   }
 }

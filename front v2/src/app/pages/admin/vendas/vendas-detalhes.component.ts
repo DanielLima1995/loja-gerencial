@@ -35,7 +35,7 @@ import { GlobalFunctions } from '../../../services/global.service';
         res => {
           this.venda = {
             ...res,
-            quantidadeTotal: res.produtos?.reduce((total: number, produto: any) => total + (produto?.quantidade ?? 0), 0) ?? 0,
+            quantidadeTotal: res.produtos?.reduce((total, produto) => total + Number(produto?.quantidade ?? 0), 0) ?? 0,
           };
           this.carregando = false;
         },

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
@@ -16,7 +16,10 @@ export class ProdutosRelacionadosService {
   ) {}
 
   getProdutosRelacionados(idProduto?: number): Observable<Produto[]> {
-    const params = idProduto == null ? {} : { id: idProduto };
+    let params = new HttpParams();
+    if (idProduto != null) {
+      params = params.set('id', idProduto);
+    }
     return this.http.get<Produto[]>(`${this.apiUrl}/Produtos/produtosRelacionados`, { params });
   }
 }

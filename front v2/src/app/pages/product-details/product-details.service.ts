@@ -20,7 +20,7 @@ export class ProductDetailsService {
     return this.http.get<Produto>(`${this.apiUrl}/Produtos/${id}`);
   }
 
-  gerenciarCarrinho(produtos: CarrinhoProdutoInput[]) {
+  gerenciarCarrinho(produtos: CarrinhoProdutoInput[]): Observable<unknown> {
     const requestProdutos = produtos.map(({ produtoId, tamanhoId, quantidade, generoId, corId }) => ({
       produtoId,
       tamanhoId,

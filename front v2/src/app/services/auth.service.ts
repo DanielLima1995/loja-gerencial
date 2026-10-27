@@ -6,14 +6,6 @@ import { LoginRequest, Usuario, UsuarioCadastrar } from '../app.interface.js';
 import { GlobalFunctions } from './global.service.js';
 import { ToastService } from '../components/toast/toast.service.js';
 
-interface AuthResponse {
-  token: string;
-  email: string;
-  nomeUsuario: string;
-  tipoUsuario: string;
-  dataExpiracaoToken: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -41,9 +33,9 @@ export class AuthService {
     }
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
+  login(email: string, password: string): Observable<unknown> {
     const body: LoginRequest = { email, password };
-    return this.http.post<AuthResponse>(`${this.apiUrl}/Auth/login`, body);
+    return this.http.post<unknown>(`${this.apiUrl}/Auth/login`, body);
   }
 
   saveToken(token: string, expiracao: string): void {
@@ -84,7 +76,7 @@ export class AuthService {
 
   logout(): void {
     if (this.getToken()) {
-      this.http.post<void>(`${this.apiUrl}/Auth/revoke`, null).subscribe({
+      this.http.post<unknown>(`${this.apiUrl}/Auth/revoke`, null).subscribe({
         error: () => this.toast.show('Não foi possível invalidar a sessão no servidor.', 'error'),
       });
     }

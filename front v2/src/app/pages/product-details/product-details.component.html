@@ -40,7 +40,7 @@
           <div class="col-sm-12">
             <small>{{produto.descricaoBasica}}</small>
           </div>
-          <div  class="col-sm-12" *ngIf="tags && tags['Cores']">
+          <div  class="col-sm-12" *ngIf="tags && coresDisponiveis.length > 0">
             <label for="dv-cores" class="bold">
               Cores Disponíveis:
             </label>

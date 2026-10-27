@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 
 import { AuthService } from '../../services/auth.service';
 import { CartService } from '../../pages/cart/cart.service';
-import { CarrinhoProdutoInput, Menu, Produto } from '../../app.interface';
+import { CarrinhoProdutoInput, Menu, Produto, ProdutoCarrinho } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -97,7 +97,7 @@ export class TopBarComponent {
 
   
 
-  trataProdutosDados(produtos: Produto[]): Produto[] {
+  trataProdutosDados(produtos: Produto[]): ProdutoCarrinho[] {
     return this.produtosDados.map((item, i) => {
       const produto = produtos.find((el) => el.id === Number(item.produtoId));
       return Object.assign({}, produto, {
@@ -106,7 +106,7 @@ export class TopBarComponent {
         tamanhoId: item.tamanhoId,
         generoId: item.generoId,
         refId: i,
-      }) as Produto;
+      }) as ProdutoCarrinho;
     });
   }
 

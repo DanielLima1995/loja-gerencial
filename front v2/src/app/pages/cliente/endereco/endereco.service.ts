@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { Endereco, EnderecoInput, ViaCepResponse } from '../../../app.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,25 +13,25 @@ export class EnderecoService {
 
   constructor(private http: HttpClient) {}
 
-  store(data: any): Observable<any> {
+  store(data: EnderecoInput): Observable<unknown> {
     return this.http.post(`${this.apiUrl}/ClienteEnderecos`, data);
   }
 
-  index(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/ClienteEnderecos`);
+  index(): Observable<Endereco[]> {
+    return this.http.get<Endereco[]>(`${this.apiUrl}/ClienteEnderecos`);
   }
 
-  show(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/ClienteEnderecos/${id}`);
+  show(id: number): Observable<Endereco> {
+    return this.http.get<Endereco>(`${this.apiUrl}/ClienteEnderecos/${id}`);
   }
 
-  delete(id: number) {
+  delete(id: number): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/ClienteEnderecos/${id}`);
   }
 
-  getEnderecoPorCep(cep: string): Observable<any> {
+  getEnderecoPorCep(cep: string): Observable<ViaCepResponse> {
     const url = `https://viacep.com.br/ws/${cep}/json/`;
-    return this.http.get(url);
+    return this.http.get<ViaCepResponse>(url);
   }
 }
 

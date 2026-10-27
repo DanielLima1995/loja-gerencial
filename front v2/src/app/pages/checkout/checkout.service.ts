@@ -2,6 +2,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { VendaInput } from '../../app.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class CheckoutService {
         private http: HttpClient
   ) {}
 
-  finalizaCompra(data: any){
+  finalizaCompra(data: VendaInput): Observable<unknown>{
     return this.http.post(`${this.apiUrl}/Vendas`, data);
   }
 }

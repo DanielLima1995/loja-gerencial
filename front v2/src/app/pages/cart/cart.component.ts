@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { SelectCoresComponent } from '../../components/select-cores/select-cores.component';
 import Swal from 'sweetalert2';
 import { SelectTamanhosComponent } from '../../components/select-tamanhos/select-tamanhos.component';
-import { CarrinhoProduto, CarrinhoProdutoInput, ItemExclusaoRef, Produto, TagsTratadas } from '../../app.interface';
+import { CarrinhoProduto, CarrinhoProdutoInput, ItemExclusaoRef, Produto, ProdutoCarrinho, TagsTratadas } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 import { Router } from '@angular/router';
 import { CarregamentoComponent } from '../../components/carregamento/carregamento.component';
@@ -93,24 +93,24 @@ export class CartComponent {
   }
 
   gerCoresDisponiveis() {
-     this.service.carrinhoTratados.forEach((element: Produto) => {
-      this.coresDisponiveis[element.id] = (element.tags ?? [])
-        .filter((tag) => tag.tipo.toLowerCase() === 'cores');
+     this.service.carrinhoTratados.forEach((element) => {
+      this.coresDisponiveis[element.refId] = (element.tags ?? [])
+        .filter((tag) => ['cor', 'cores'].includes(tag.tipo.toLowerCase()));
 
       this.gerTamanhosDisponiveis();
     });
   }
 
   gerTamanhosDisponiveis() {
-     this.service.carrinhoTratados.forEach((element: Produto) => {
-      this.tamanhosDisponiveis[element.id] = (element.tags ?? [])
+     this.service.carrinhoTratados.forEach((element) => {
+      this.tamanhosDisponiveis[element.refId] = (element.tags ?? [])
         .filter((tag) => tag.tipo.toLowerCase() === 'tamanho');
     });
 
     this.carregando = false;
   }
 
-  trataProdutosDados(produtos: Produto[]): Produto[] {
+  trataProdutosDados(produtos: Produto[]): ProdutoCarrinho[] {
     return this.produtosDados.map((item, i) => {
       let produto = produtos.find((el) => el.id === Number(item.produtoId));
       item.refId = i + 1;
@@ -120,11 +120,11 @@ export class CartComponent {
         tamanhoId: item.tamanhoId,
         generoId: item.generoId,
         refId: item.refId,
-      }) as Produto;
+      }) as ProdutoCarrinho;
     });
   }
 
-  trataProdutosCarrinho(produtos: CarrinhoProduto[]): Produto[] {
+  trataProdutosCarrinho(produtos: CarrinhoProduto[]): ProdutoCarrinho[] {
     if(!produtos || produtos.length === 0) return [];
     return this.service.trataProdutosCarrinho(produtos);
   }
@@ -219,7 +219,7 @@ export class CartComponent {
   get valorTotal(): string {
     let valor: number = 0;
      this.service.carrinhoTratados.forEach((item) => {
-      valor += item.valor ? (parseFloat(item.valor.toString()) * item.quantidade) : 0;
+      valor += item.valor ? (parseFloat(item.valor.toString()) * (item.quantidade ?? 0)) : 0;
     });
 
     return this.globalFunctions.valorConvertido(valor);

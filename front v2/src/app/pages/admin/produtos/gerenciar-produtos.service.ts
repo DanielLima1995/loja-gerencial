@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { ProdutoBody } from '../../../app.interface';
+import { Produto, ProdutoBody } from '../../../app.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,15 +15,15 @@ export class GerenciarProdutosService {
     private http: HttpClient
   ) {}
 
-  cadastrarProduto(dados: ProdutoBody) : Observable<any>{
+  cadastrarProduto(dados: ProdutoBody) : Observable<unknown>{
     return this.http.post(`${this.apiUrl}/Produtos`, dados);
   }
 
-  getProduto(id: number) : Observable<any>{
-    return this.http.get(`${this.apiUrl}/Produtos/${id}`);
+  getProduto(id: number) : Observable<Produto>{
+    return this.http.get<Produto>(`${this.apiUrl}/Produtos/${id}`);
   }
 
-  editarProduto(id: number, body: ProdutoBody) : Observable<any>{
+  editarProduto(id: number, body: ProdutoBody) : Observable<unknown>{
     return this.http.put(`${this.apiUrl}/Produtos/${id}`, body);
   }
 }

@@ -1,7 +1,7 @@
 
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Tag } from '../../app.interface';
 import { globalModules } from '../../globalModules';
 
 @Component({
@@ -14,39 +14,31 @@ import { globalModules } from '../../globalModules';
   styleUrl: './select-cores.component.scss'
 })
 export class SelectCoresComponent {
-  @ViewChild('selectCores') selectCores!: ElementRef; // Referência ao input oculto
-
-  @Input() tags: any = [];
+  @Input() tags: Tag[] | Record<string, Tag[]> = [];
   @Input() actualColor: number = 0;
   @Input() disabled: boolean = false;
 
   @Output() selectedColor: EventEmitter<number> = new EventEmitter<number>();
-  formulario: FormGroup;
+  selectedColorId: number | null = null;
 
-  constructor(public fb: FormBuilder){
-    this.formulario = this.fb.group({
-      corSelecionada: ['']
+  ngOnInit(): void {
+    this.selectedColorId = this.actualColor || null;
+  }
+
+  get coresDisponiveis(): Tag[] {
+    const tags = Array.isArray(this.tags) ? this.tags : this.tags?.['Cores'] ?? [];
+    const ids = new Set<number>();
+
+    return tags.filter((tag) => {
+      if (ids.has(tag.id)) return false;
+      ids.add(tag.id);
+      return true;
     });
   }
-  ngOnInit(){
-    this.formulario.patchValue({
-      corSelecionada: this.actualColor
-    })
-    if(this.disabled){
-      this.formulario.get('corSelecionada')?.disable();
-    }
-  }
 
-  get coresDisponiveis(): any[]{
-    if (Array.isArray(this.tags)) return this.tags;
-    return this.tags?.['Cores'] ?? [];
-  }
-
-  sendSelectedColor(){
-    let item = this.formulario.get('corSelecionada');
-    if(item != null){
-      this.selectedColor.emit(item.value);
-    }
+  sendSelectedColor(colorId: number): void {
+    this.selectedColorId = colorId;
+    this.selectedColor.emit(colorId);
   }
 
 

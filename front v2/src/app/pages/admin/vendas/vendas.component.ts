@@ -52,7 +52,7 @@ import { GlobalFunctions } from '../../../services/global.service';
           this.carregando = false;
           this.vendas = res.items.map((venda: Vendas) => ({
             ...venda,
-            quantidadeTotal: venda.produtos?.reduce((total, produto) => total + (produto?.quantidade ?? 0), 0) ?? 0,
+            quantidadeTotal: venda.produtos?.reduce((total, produto) => total + Number(produto?.quantidade ?? 0), 0) ?? 0,
           }));
           this.currentPage = res.page;
           this.totalPages = res.totalPages;

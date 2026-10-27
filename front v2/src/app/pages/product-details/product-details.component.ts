@@ -86,9 +86,11 @@ export class ProductDetailsComponent {
   }
 
   get coresDisponiveis(): Tag[]{
-    if(!this.tags || !this.tags['Cores']) return [];
+    if(!this.tags) return [];
 
-    return this.tags['Cores'];
+    return Object.entries(this.tags)
+      .filter(([tipo]) => tipo.toLowerCase() === 'cor')
+      .flatMap(([, tags]) => tags);
   }
 
   get tamanhosDisponiveis(): Tag[]{

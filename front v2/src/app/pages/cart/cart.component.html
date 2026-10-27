@@ -87,7 +87,7 @@
                                                                     Quantidade:
                                                                   </label>
                                                                   <div class="dv-quantidade p-2">
-                                                                    <app-input-numerico [value]="carrinhoProduto.quantidade ?? 1" [min]="0" [max]="999" [step]="1" (valueChange)="atualizaProduto('quantidade', index, $event, carrinhoProduto.refId)" [disabled]="checkout"></app-input-numerico>
+                                                                    <app-input-numerico [value]="carrinhoProduto.quantidade" [min]="0" [max]="999" [step]="1" (valueChange)="atualizaProduto('quantidade', index, $event, carrinhoProduto.refId)" [disabled]="checkout"></app-input-numerico>
                                                                   </div>
                                                             </div>
                                                             <div class="">
@@ -95,7 +95,7 @@
                                                                     Tamanho:
                                                                   </label>
                                                                   <div class="dv-tamanho p-2">
-                                                                    <app-select-tamanhos  [items]="tamanhosDisponiveis[carrinhoProduto.id]" (selectedValue)="atualizaProduto('tamanho', index, $event, carrinhoProduto.refId)" [actualItem]="carrinhoProduto?.tamanhoId ?? 0" [onlySelected]="checkout"></app-select-tamanhos>
+                                                                    <app-select-tamanhos  [items]="tamanhosDisponiveis[carrinhoProduto.refId]" (selectedValue)="atualizaProduto('tamanho', index, $event, carrinhoProduto.refId)" [actualItem]="carrinhoProduto?.tamanhoId ?? 0" [onlySelected]="checkout"></app-select-tamanhos>
                                                                 </div>
                                                             </div>
                                                             <div  class="col-sm-12" >
@@ -103,7 +103,7 @@
                                                                   {{checkout ? 'Cor Selecionada' : 'Cores Disponíveis'}}:
                                                                 </label>
                                                                 <div class="dv-cores p-2">
-                                                                    <app-select-cores [actualColor]="carrinhoProduto?.corId ?? 0" [disabled]="checkout"  [tags]="coresDisponiveis[carrinhoProduto.id]"  (selectedColor)="atualizaProduto('cor', index, $event, carrinhoProduto.refId)"></app-select-cores>
+                                                                    <app-select-cores [actualColor]="carrinhoProduto?.corId ?? 0" [disabled]="checkout"  [tags]="coresDisponiveis[carrinhoProduto.refId]"  (selectedColor)="atualizaProduto('cor', index, $event, carrinhoProduto.refId)"></app-select-cores>
                                                                 </div>
                                                               
                                                               </div>
@@ -128,7 +128,7 @@
                                                     Tamanho:
                                                   </label>
                                                   <div class="dv-tamanho p-2">
-                                                    <app-select-tamanhos  [items]="tamanhosDisponiveis[carrinhoProduto.id]" (selectedValue)="atualizaProduto('tamanho', index, $event, carrinhoProduto.refId)" [actualItem]="carrinhoProduto?.tamanho ?? 0" [onlySelected]="checkout"></app-select-tamanhos>
+                                                    <app-select-tamanhos  [items]="tamanhosDisponiveis[carrinhoProduto.refId]" (selectedValue)="atualizaProduto('tamanho', index, $event, carrinhoProduto.refId)" [actualItem]="carrinhoProduto.tamanhoId" [onlySelected]="checkout"></app-select-tamanhos>
                                                 </div>
                                             </div>
                                             <div  class="col-12" >
@@ -136,7 +136,7 @@
                                                   {{checkout ? 'Cor Selecionada' : 'Cores Disponíveis'}}:
                                                 </label>
                                                 <div class="dv-cores p-2">
-                                                    <app-select-cores [actualColor]="carrinhoProduto?.cor ?? 0" [disabled]="checkout"  [tags]="coresDisponiveis[carrinhoProduto.id]"  (selectedColor)="atualizaProduto('cor', index, $event, carrinhoProduto.refId)"></app-select-cores>
+                                                    <app-select-cores [actualColor]="carrinhoProduto.corId" [disabled]="checkout"  [tags]="coresDisponiveis[carrinhoProduto.refId]"  (selectedColor)="atualizaProduto('cor', index, $event, carrinhoProduto.refId)"></app-select-cores>
                                                 </div>
                                               
                                               </div>

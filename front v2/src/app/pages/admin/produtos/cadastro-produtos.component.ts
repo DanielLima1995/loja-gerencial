@@ -132,6 +132,8 @@ alterarImagemPrincipal(fromIndex: number): string[] {
 }
 
 onSubmit(): void {
+  if (this.carregando) return;
+
   if (this.formulario.valid) {
     const convertTags: Record<string, Tag[]> = {};
     Object.keys(this.tagsSelecionadas).forEach((e) => {
@@ -148,6 +150,7 @@ onSubmit(): void {
       tagIds: Object.values(convertTags).flat().map((tag) => tag.id),
     };
 
+    this.carregando = true;
     this.gerenciarProdutosService.cadastrarProduto(body).subscribe(
       () => {
         this.globalFunctions.alerta('Produto Cadastrado', 'Produto cadastrado com sucesso', 'success');
@@ -156,11 +159,13 @@ onSubmit(): void {
         }, 2000);
       },
       () => {
+        this.carregando = false;
         this.globalFunctions.alerta('Erro ao Cadastro do Produto', 'Ocorreu uma falha interna ao tentar cadastrar o produto. Tente novamente.', 'error');
       }
     );
   } else {
-    this.globalFunctions.alerta('Erro no Cadastro do Produto', 'Alguns dados do formulário estão inválidos. Por favor, revise as informações e tente novamente.', 'error');
+    this.formulario.markAllAsTouched();
+    this.globalFunctions.alerta('Cadastro incompleto', this.pendenciasCadastro.join(' '), 'warning');
   }
 }
 
@@ -215,13 +220,71 @@ togglePreview() {
 
 validaTagsObrigatorias(): boolean {
   return this.tagsObrigatorias.every(
-    (value) => this.tagsSelecionadas[value] && this.tagsSelecionadas[value].length > 0
+    (tipo) => {
+      const grupo = this.getGrupoTagObrigatorio(tipo);
+      return !!grupo && (this.tagsSelecionadas[grupo]?.length ?? 0) > 0;
+    }
   );
+}
+
+get pendenciasCadastro(): string[] {
+  const pendencias: string[] = [];
+  const camposObrigatorios: [string, string][] = [
+    ['titulo', 'Informe o título.'],
+    ['valor', 'Informe o valor.'],
+    ['descricao_basica', 'Preencha a descrição básica.']
+  ];
+
+  camposObrigatorios.forEach(([campo, mensagem]) => {
+    const controle = this.formulario.controls[campo];
+    if (controle.invalid) {
+      if (campo === 'valor' && controle.hasError('min')) {
+        pendencias.push('O valor não pode ser negativo.');
+      } else {
+        pendencias.push(mensagem);
+      }
+    }
+  });
+
+  if (!this.descricaoTemConteudo()) {
+    pendencias.push('Preencha a descrição.');
+  }
+
+  this.tagsObrigatorias.forEach((tipo) => {
+    const grupo = this.getGrupoTagObrigatorio(tipo);
+
+    if (!grupo || (this.tagsSelecionadas[grupo]?.length ?? 0) === 0) {
+      pendencias.push(`Selecione pelo menos uma tag em ${tipo}.`);
+    }
+  });
+
+  if (this.previewImages.length === 0) {
+    pendencias.push('Adicione pelo menos uma imagem.');
+  }
+
+  return pendencias;
+}
+
+private getGrupoTagObrigatorio(tipo: string): string | undefined {
+  const nomeObrigatorio = tipo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  return this.tags?.chaves.find((chave) => {
+    const nome = chave.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return nome === nomeObrigatorio || (nomeObrigatorio === 'cores' && nome === 'cor');
+  });
+}
+
+private descricaoTemConteudo(): boolean {
+  const descricao = this.formulario.controls['descricao'].value;
+  return typeof descricao === 'string'
+    && descricao.replace(/<[^>]*>/g, '').replace(/&nbsp;|&#160;/gi, ' ').trim().length > 0;
 }
 
 get formularioValido(): boolean {
   return (
-    this.validaTagsObrigatorias() && this.formulario.valid && this.previewImages.length > 0
+    this.formulario.valid
+    && this.descricaoTemConteudo()
+    && this.validaTagsObrigatorias()
+    && this.previewImages.length > 0
   );
 }
 

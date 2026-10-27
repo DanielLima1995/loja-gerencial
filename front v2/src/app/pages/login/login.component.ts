@@ -7,6 +7,26 @@ import Swal from 'sweetalert2';
 import { ProductDetailsService } from '../product-details/product-details.service';
 import { GlobalFunctions } from '../../services/global.service';
 
+interface LoginResponse {
+  token: string;
+  email: string;
+  nomeUsuario: string;
+  tipoUsuario: 'Admin' | 'Cliente';
+  dataExpiracaoToken: string;
+}
+
+function isLoginResponse(data: unknown): data is LoginResponse {
+  if (typeof data !== 'object' || data === null) return false;
+  const response = data as Record<string, unknown>;
+  return (
+    typeof response['token'] === 'string' &&
+    typeof response['email'] === 'string' &&
+    typeof response['nomeUsuario'] === 'string' &&
+    (response['tipoUsuario'] === 'Admin' || response['tipoUsuario'] === 'Cliente') &&
+    typeof response['dataExpiracaoToken'] === 'string'
+  );
+}
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -49,13 +69,7 @@ export class LoginComponent {
     this.carregando = true;
     this.authService.login(this.email, this.senha).subscribe({
       next:(authData) => {
-        if (
-          !authData.email ||
-          !authData.nomeUsuario ||
-          !['Admin', 'Cliente'].includes(authData.tipoUsuario) ||
-          !authData.token ||
-          !authData.dataExpiracaoToken
-        ) {
+        if (!isLoginResponse(authData)) {
           this.carregando = false;
           this.globalFunctions.alerta('Resposta Inválida', 'A API não retornou os dados esperados para iniciar a sessão.', 'error');
           return;

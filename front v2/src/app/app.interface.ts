@@ -32,7 +32,7 @@ export function mapTagsGroups(groups: TagsGrupo[]): TagsWithKeys {
   return { dados, chaves: Object.keys(dados) };
 }
 
-export function setImagemPrincipal(produto: Produto): Produto {
+export function setImagemPrincipal<T extends Produto>(produto: T): T {
   produto.imagens = [...(produto.imagens ?? [])]
     .filter((imagem) => !!imagem && typeof imagem.referencia === 'number')
     .sort((a, b) => a.referencia - b.referencia);
@@ -62,6 +62,14 @@ export interface Produto {
   imagemPrincipal?: ProdutoImagem;
 }
 
+export interface ProdutoCarrinho extends Produto {
+  quantidade: number;
+  tamanhoId: number;
+  corId: number;
+  generoId: number;
+  refId: number;
+}
+
 export interface ProdutoFilter {
   page?: number;
   perPage?: number;
@@ -71,6 +79,14 @@ export interface ProdutoFilter {
   ativo?: boolean;
   usuarioId?: string;
   tags?: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
 }
 
 export interface TagsFilter {
@@ -133,6 +149,7 @@ export interface VendaProduto {
   tamanho: string;
   genero: string;
   cor: string;
+  produto?: Produto;
 }
 
 export interface Endereco {
@@ -148,10 +165,23 @@ export interface Endereco {
   pontoReferencia: string | null;
 }
 
+export type EnderecoInput = Omit<Endereco, 'id' | 'clienteId'>;
+
+export interface ViaCepResponse {
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  erro?: boolean;
+}
+
 export interface Vendas {
   id: number;
   status: string;
-  clienteId: string;
+  usuarioId?: string;
+  clienteId?: string;
   enderecoId: number;
   dataCompra: string;
   formaPagamento: string;
@@ -159,6 +189,21 @@ export interface Vendas {
   endereco?: Endereco;
   produtos: VendaProduto[];
   quantidadeTotal?: number;
+}
+
+export interface VendaInput {
+  enderecoId: number;
+  formaPagamento: string;
+}
+
+export interface VendaStatusInput {
+  status: string;
+}
+
+export interface TagInput {
+  descricao: string;
+  cor: string;
+  tipo: string;
 }
 
 export interface TagsTratadas {

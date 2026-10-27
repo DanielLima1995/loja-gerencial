@@ -1,27 +1,33 @@
-  <div class="card card-produto"  [routerLink]="link">
-    <img [src]="imagem" alt="" />
-    <div class="card-body">
+<a
+  class="card card-produto"
+  [routerLink]="link"
+  [attr.aria-label]="'Ver detalhes de ' + titulo">
+  <div class="produto-imagem">
+    <img [src]="imagem" [alt]="titulo" />
+  </div>
 
-      <div class="row">
-        <div class="card-title">
-          <h6>{{ titulo }}</h6>
-        </div>
-        <p>
-          {{ descricao }}
-        </p>
-        <div class="float-right">
-          <app-avaliacao></app-avaliacao>
-        </div>
-      </div>
-      <hr />
-      
-      <div class="">
-        <div><h5 class="bold">{{globalFunctions.valorConvertido(valor)}}</h5></div>
-        <div class="text-flower-blue">
-          em 12x de
-          <span class="bold">{{globalFunctions.valorConvertido(valor / 12)}}</span>
-          sem juros
-        </div>
+  <div class="card-body">
+    <div class="produto-conteudo">
+      <h6 class="produto-titulo">{{ titulo }}</h6>
+      <p class="produto-descricao">{{ descricao }}</p>
+      <div class="produto-avaliacao">
+        <app-avaliacao></app-avaliacao>
       </div>
     </div>
+
+    <div class="produto-preco">
+      <div>
+        <span class="produto-label-preco">Preço</span>
+        <h5 class="produto-valor">{{ globalFunctions.valorConvertido(valor) }}</h5>
+        <p class="produto-parcelamento">
+          ou 12x de
+          <span>{{ globalFunctions.valorConvertido(valor / 12) }}</span>
+          sem juros
+        </p>
+      </div>
+      <span class="produto-cta" aria-hidden="true">
+        Ver produto <span class="produto-seta">→</span>
+      </span>
+    </div>
   </div>
+</a>

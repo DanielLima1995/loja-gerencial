@@ -1,74 +1,90 @@
 <ng-container *ngIf="carregando">
-    <app-carregamento></app-carregamento>
-  </ng-container>
-<div class="bg-default" [ngClass]="{
-    'd-none': carregando
-  }">
-    <div class="card " [ngClass]="{
-        'p-4': !checkout
-    }">
-      <div class="card-title d-flex justify-content-between" *ngIf="!checkout">
-            <div><h4>Endereços</h4></div>
-            <div><button  class="btn btn-primary btn-lg radius-0 bg-flower-blue"  [routerLink]="'/cliente/enderecos/cadastrar'" >Cadastrar</button>
-            </div>
-        
+  <app-carregamento></app-carregamento>
+</ng-container>
+
+<section class="enderecos-pagina bg-default" [ngClass]="{ 'd-none': carregando }">
+  <div class="card enderecos-container" [ngClass]="{ 'checkout-container': checkout }">
+    <header class="enderecos-header" *ngIf="!checkout">
+      <div>
+        <h4>Endereços</h4>
+        <p>Gerencie seus endereços de entrega</p>
       </div>
-      <div class="card-body" [ngClass]="{
-        'pl-0 pr-0': checkout
-      }">
-        <div class="card right-shadow mb-4 overflow-auto" [ngClass]="{
-            'border border-success ': idEnderecoSelecionado ==  endereco.id
-        }" *ngFor="let endereco of enderecos">
-            <div class="card-body dv-enderecos">
-                <div class="conteudo bg-white ">
-                    <div class="row">
-                        <div class="col-4">
-                            <label class="bold" for ="cep">CEP</label>
-                            <div class="cep">{{endereco.cep}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="logradouro">Logradouro</label>
-                            <div class="logradouro">{{endereco.logradouro}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="numero">Número</label>
-                            <div class="numero">{{endereco.numero}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="bairro">Bairro</label>
-                            <div class="bairro">{{endereco.bairro}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="cidade">Cidade</label>
-                            <div class="cidade">{{endereco.cidade}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="estado">UF</label>
-                            <div class="estado">{{endereco.uf}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="complemento">Complemento</label>
-                            <div class="complemento">{{endereco.complemento}}</div>
-                        </div>
-                        <div class="col-4">
-                            <label class="bold" for ="pontoReferencia">Ponto de Referência</label>
-                            <div class="pontoReferencia">{{endereco.pontoReferencia}}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer d-flex">
-                <ng-container *ngIf="checkout">
-                    <div class=" ml-2">
-                        <button class="btn btn-primary radius-0 bg-flower-blue" *ngIf="endereco.id != idEnderecoSelecionado" (click)="selecionarEndereco(endereco.id)">Selecionar</button>
-                        <span *ngIf="endereco.id == idEnderecoSelecionado"  class="bold text-success vertical-sub"><i class="fa fa-check" aria-hidden="true"></i></span>
-                    </div>
-                </ng-container>
+      <button
+        type="button"
+        class="btn btn-primary bg-flower-blue btn-cadastrar"
+        [routerLink]="'/cliente/enderecos/cadastrar'">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Novo endereço
+      </button>
+    </header>
+
+    <div class="enderecos-lista" [ngClass]="{ 'checkout-lista': checkout }">
+      <article
+        class="card endereco-card"
+        [class.endereco-selecionado]="idEnderecoSelecionado === endereco.id"
+        [attr.aria-current]="idEnderecoSelecionado === endereco.id ? 'true' : null"
+        *ngFor="let endereco of enderecos">
+        <div class="endereco-conteudo">
+          <div class="endereco-icone" aria-hidden="true">
+            <i class="fa fa-map-marker"></i>
+          </div>
+
+          <div class="endereco-detalhes">
+            <div class="endereco-titulo">
+              <div>
+                <h5>{{endereco.logradouro}}, {{endereco.numero}}</h5>
+                <p class="endereco-localizacao">
+                  <span>{{endereco.bairro}} · {{endereco.cidade}}/{{endereco.uf}}</span>
+                  <span class="endereco-cep">CEP {{endereco.cep}}</span>
+                </p>
               </div>
+              <span class="endereco-badge" *ngIf="idEnderecoSelecionado === endereco.id">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Selecionado
+              </span>
+            </div>
+
+            <div class="endereco-informacoes">
+              <div class="endereco-info" *ngIf="endereco.complemento">
+                <span>Complemento</span>
+                <strong>{{endereco.complemento}}</strong>
+              </div>
+              <div class="endereco-info" *ngIf="endereco.pontoReferencia">
+                <span>Ponto de referência</span>
+                <strong>{{endereco.pontoReferencia}}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="endereco-acao" *ngIf="checkout">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              *ngIf="endereco.id !== idEnderecoSelecionado"
+              [attr.aria-label]="'Selecionar endereço de ' + endereco.logradouro"
+              (click)="selecionarEndereco(endereco.id)">
+              Selecionar
+            </button>
+            <span class="endereco-confirmacao" *ngIf="endereco.id === idEnderecoSelecionado">
+              <i class="fa fa-check-circle" aria-hidden="true"></i>
+              Endereço selecionado
+            </span>
+          </div>
         </div>
-        <div class="card w-100 white radius-0 right-shadow p-0" *ngIf="enderecos.length == 0">
-            <div class="text-center fw-bolder p-4 bg-white">Nenhum endereço de entrega foi cadastrado!</div>
-        </div>
+      </article>
+
+      <div class="card endereco-vazio" *ngIf="enderecos.length === 0">
+        <i class="fa fa-map-marker" aria-hidden="true"></i>
+        <strong>Nenhum endereço cadastrado</strong>
+        <span>Cadastre um endereço para facilitar suas próximas entregas.</span>
+        <button
+          type="button"
+          class="btn btn-primary bg-flower-blue"
+          *ngIf="!checkout"
+          [routerLink]="'/cliente/enderecos/cadastrar'">
+          Cadastrar endereço
+        </button>
       </div>
+    </div>
   </div>
-</div>
+</section>
